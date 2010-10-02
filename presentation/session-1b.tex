@@ -1,6 +1,5 @@
-\documentclass{beamer}
+\documentclass[14pt,mathserif]{beamer}
 \usepackage[noend]{algorithmic}
-\usepackage{paralist}
 \usepackage{latexsym,amsmath,url}
 \usepackage{hyperref}
 \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
@@ -15,24 +14,21 @@
 \newcommand{\superscript}[1]{\ensuremath{^\textrm{\scriptsize#1 }}}
 \mode<presentation>{ 
   \usetheme{Boadilla}
-  %\setbeamercovered{invisible}
-  % or whatever (possibly just delete it)
-} \title[ML Course ]{Introduction to
-  Classification and Sequence Labeling}
+} \title[ML / NLP / MT Course ]{ Machine Learning for NLP and MT }
 
 
-\author[Stroppa and Chrupala]{Grzegorz Chrupa{\l}a and Nicolas Stroppa}
+\author[Chrupala and Stroppa]{Grzegorz Chrupa{\l}a and Nicolas Stroppa}
 
-\institute[Google + Saarland] % (optional, but mostly needed)
+\institute[Saarland+Google] % (optional, but mostly needed)
 {
-Google\\
-Saarland University
+Saarland University\\
+Google
 }
 \date[2010] % (optional, should be abbreviation of conference name)
-{META}
+{META Workshop}
 
 
-\pgfdeclareimage[height=1cm]{UdS}{SaarlandUniversityLogo.jpg}
+%\pgfdeclareimage[height=1cm]{UdS}{SaarlandUniversityLogo.jpg}
 %\logo{\pgfuseimage{UdS}}
 
  \AtBeginSection[]
@@ -50,11 +46,171 @@ Saarland University
   \tableofcontents
 \end{frame}
 
+\section{Linear models}
 
-\begin{frame}\frametitle{First slide}
+\begin{frame}
+  \frametitle{Linear models}
+  \begin{block}{}
+    Think of training examples as points in $d$-dimensional
+    space. Each dimension corresponds to one feature.
+  \end{block}
+  \begin{block}{}
+    A linear binary classifier defines a plane in the space which
+    separates positive from negative examples. 
+  \end{block}
 
 \end{frame}
 
+\begin{frame}
+ \frametitle{Linear decision boundary}
+\begin{itemize}
+\item A \alert{hyperplane} is a generalization of a straight line to
+  $>2$ dimensions
+\item A hyperplane contains all the points in a $d$ dimensional space satisfying the following equation:
+\[
+ w_1x_1 + w_2x_2, \ldots, + w_dx_d + w_0 = 0
+\]
+\item Each coefficient $w_i$ can be thought of as a weight on the
+  corresponding feature
+\item The vector containing all the weights $\w = (w_0,\ldots,w_d)$ is the
+  \alert{parameter vector} or \alert{weigth vector}
+\end{itemize}
+\end{frame}
 
+
+
+\begin{frame}
+ \frametitle{Normal vector}
+\begin{itemize}
+\item Geometrically, the weight vector $\w$ is a \alert{normal vector}
+  of the separating hyperplane
+\item A normal vector of a surface is any vector which is
+  perpendicular to it
+\begin{center}
+ \includegraphics[scale=0.2]{Normal_vectors2.png}
+ \end{center}
+\end{itemize}
+\end{frame}
+
+
+ \begin{frame}\frametitle{Hyperplane as a classifier}
+   \begin{itemize}
+   \item Let \[
+     g(\x) =  w_1x_1 + w_2x_2, \ldots, + w_dx_d + w_0
+     \]
+ \item Then
+   \[ y = 
+   \begin{cases}
+     y_{+} & \text{ if } g(\x) \geq 0\\
+     y_{-} & \text{ otherwise }
+   \end{cases}
+ \]
+   \end{itemize}
+ \end{frame}
+
+\begin{frame}
+ \frametitle{Bias}
+\begin{itemize}
+\item The slope of the hyperplane is determined by
+  $w_1...w_d$. The location (intercept) is determined by  bias $w_0$
+\item Include bias in the
+  weight vector and add an dummy component to the feature vector
+\item Set this component to $x_0 = 1$
+\item Then 
+ \begin{align}
+ g(\x) & = \sum_{\alert{i=0}}^d w_i x_i\\
+ g(\x) & = \w \cdot \x
+\end{align}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\label{hyperplanes}
+ \begin{center}\frametitle{Separating hyperplanes in 2 dimensions}
+\vskip -0.5cm 
+\includegraphics[scale=0.5]{linear.pdf}
+\end{center}
+\end{frame}
+
+
+
+\section{Perceptron}
+\begin{frame}
+ \frametitle{Perceptron training}
+\begin{itemize}
+ \item How do we find a set of weights that separate our classes?
+\item \textbf{Perceptron}: A simple mistake-driven online algortihm
+\begin{block}{}
+\begin{itemize}
+\item  Start with a zero weight vector and process each training example in turn. 
+\item If the current weight vector classifies the current example incorrectly, move the weight vector in the right direction. 
+\item If weights stop changing, stop
+\end{itemize}
+\end{block}
+ \item If examples are linearly separable, then this algorithm is guaranteed to converge on the solution vector
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Fixed increment online perceptron algorithm}
+\begin{itemize}
+\item Binary classification, with classes $+1$ and $-1$
+\item Decision function $y' = \mathrm{sign}(\vecb{w}\cdot \x+b)$
+\end{itemize}
+
+\begin{block}{\textsc{Perceptron}($x^{1:N},y^{1:N},I$):}
+\begin{algorithmic}[1]
+\STATE $\vecb{w} \leftarrow \vecb{0}$
+\STATE $b \leftarrow 0$
+\FOR {$i = 1...I$}
+	\FOR {$n = 1...N$}
+    		\IF {$y^{(n)} (\vecb{w}\cdot \x^{(n)}+b) \leq 0$}
+        		\STATE $\vecb{w} \leftarrow \vecb{w} + y^{(n)} \x^{(n)}$
+			\STATE $b \leftarrow b + y^{(n)}$
+    		\ENDIF
+    	\ENDFOR
+\ENDFOR
+\STATE \textbf{return} $(\vecb{w},b)$
+\end{algorithmic}                 \end{block}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Weight averaging}
+\begin{itemize}
+ \item Although the algorithm is guaranteed to converge, the solution is not unique!
+\item Sensitive to the order in which examples are processed
+\item Separating the training sample does not equal good accuracy on unseen data
+\item Empirically, better generalization performance with \alert{weight averaging}
+\begin{itemize}
+\item A method of avoiding overfitting
+\item As final weight vector, use the mean of all the weight vector values for each step of the algorithm
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Efficient averaged perceptron algorithm}
+ \begin{block}{\textsc{Perceptron}($x^{1:N},y^{1:N},I$):}
+\begin{algorithmic}[1]
+\STATE $\vecb{w} \leftarrow \vecb{0}$ ; $\vecb{w_a} \leftarrow \vecb{0}$
+\STATE $b \leftarrow 0$ ; $b_a \leftarrow 0$
+\STATE $c \leftarrow 1$
+\FOR {$i = 1...I$}
+	\FOR {$n = 1...N$}
+    		\IF {$y^{(n)} (\vecb{w}\cdot \x^{(n)}+b) \leq 0$}
+        		\STATE $\vecb{w} \leftarrow \vecb{w} + y^{(n)} \x^{(n)}$ ; $b \leftarrow b + y^{(n)}$
+			\STATE $\vecb{w_a} \leftarrow \vecb{w_a} + c y^{(n)} \x^{(n)}$ ; $b_a \leftarrow b_a + c y^{(n)}$
+
+    		\ENDIF
+        \STATE $c \leftarrow c + 1$
+    	\ENDFOR
+\ENDFOR
+\STATE \textbf{return} $(\vecb{w}-\vecb{w_a}/c, b - b_a/c)$
+\end{algorithmic}                 \end{block}
+\end{frame}
+
+\section{Na{\"i}ve Bayes}
+\section{Logistic regression}
 
 \end{document}
