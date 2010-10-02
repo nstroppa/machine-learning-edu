@@ -1,0 +1,128 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww21560\viewh13760\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 \
+Purpose:\
+  - Be able to understand main ideas and principles\
+  - Know how to apply simple/main techniques to common problems\
+  - Familiar with main approaches\
+  - Acquire important vocabulary\
+  - Have / Able to understand main references\
+\
+Running examples:\
+  - You're an employee in a news aggregation company and you're the one chosen to solve :\
+    - Text classification  ("vertical" sports/economy/...)\
+    => We'll show why ML is going to give you a huge advantage\
+\
+Session 1:  Text classification\
+  - Story (30mins):\
+    - News aggregation (categorize news into verticals)\
+    - Introduction (N)\
+ - Background (30 mins):\
+   - Knowledge representation\
+   - How do you go about it\
+\
+  - Models (2H15mins, G):\
+    - Linear models (NB, Maxent, SVM, perceptron)\
+    - K-nn (...)\
+    [-optional: kernel]\
+  - (+unsupervised)\
+  - => voc: generative / parametric\
+\
+Session 2:  Sequence labeling (G)\
+  - Want to improve your model by recognizing entities (named-entity recognition): =>, so you need to work at the word/sentence level (sequence)\
+  - HMM, CRF\
+  - Cool if they understand NB:Maxent::HMM::CRF\
+  - present SGD (looks like perceptron, easy to understand)?\
+  - (original classification system improved by x%)\
+\
+Session 3:  Machine translation (N)\
+  - System combination???\
+  - ML???  You don't have labeled data, you decided to translate the document and use existing models)  (you try both directions)\
+\
+Session 4: (N,G...)\
+  - System combination?)\
+  - Your disk crashed, you lost the labeled data and the models => needs to do unsupervised.  GMM.\
+  - After a few weeks, you recover some labeled data => semi-supervised\
+\
+Present each problem\
+  - Text classification:\
+    - You're building a news aggregator.\
+    - Your main news source/provider used to assign a category to each news (sport, economy, people, etc.) but stopped doing it.  You still want to be able to refine per category.\
+    - Why are you asked to do it? (aka is that really Natural Language Processing?)\
+       - You're the only one not associating morphology with body-building\
+       - You know Zipf is not a rock band\
+       - You know Katakana is not a motorbike brand\
+\
+   => This implies lemmatization\
+   => You want to leverage other languages => This implies MT\
+\
+\
+Text classification:  =>  how would you do it?\
+\
+Where ML comes from?\
+  - Artificial Intelligence:  humans can learn, so should machines!\
+  - Statistics:  give me some facts and I'll be able to do inference\
+  - Optimization:  ...\
+  - Vision/Recognition:\
+  - Applications: speech, nlp\
+\
+Why ML is good from a software engineering point of view?\
+- Transform a problem into a series of smaller problems: (parallel, can be done by different people)\
+- Software engineering !!!!\
+- Knowledge representation (you plug this in the machine, there's nothing it can do...)\
+   - Know your data!!!\
+- Feature engineering\
+   - Once you've decided on a representation, what do you put?\
+- Opt:\
+   - black box\
+- Application/Eval/Metrics\
+   - Eval is THE thing, don't start playing if you don't know what you should expect...  maybe the first question to answer, even before the algo\
+\
+- ML is Ecological:\
+  - Re-use, Re-cycle, Re-...\
+- Focus on the important thing\
+\
+\
+\
+\
+\
+- Examples of rules that people came up with.\
+    if contains this word, etc.\
+\
+set of rules.   =>  let's number this rule (rule1, 2, etc.)\
+For each of those rules, we have a binary value => vector representation... (we'll write x[i] the value of document x on rule i)\
+\
+(let's assume we only have 20 rules or so to start with)\
+=> What if they conflict?  How do you prioritize them?  Will they apply to a similar but slightly different task?  How much will you re-use?\
+\
+\
+ML vs Rule-based approaches => ML is all about rules!  It just gives a way to combine them/deal with conflicts, etc.\
+=> 2-D representation (only two rules ......)\
+\
+How to separate those data???\
+  => linearly, neighbour, locally-linear\
+Linear:\
+  - SVM\
+  - Maxent\
+  - Perceptron\
+=> Blackbox giving a w.\
+w.x\
+\
+What if data are not linearly separable?\
+\
+Implicit vs. Explicit Model\
+  ... (lazy vs eager)\
+\
+Training vs. Model\
+  - SVM/Maxent/Perceptron are all the same\
+\
+SVM is regularized hinge-loss?\
+\
+After text class, recap on different steps involved... => (training (building a model), applying the model, eval the model)\
+\
+\
+}
