@@ -1,41 +1,42 @@
-\documentclass{beamer}
-\usepackage[noend]{algorithmic}
-\usepackage{paralist}
+\documentclass[usenames,dvipsnames]{beamer}
+% \usepackage[noend]{algorithmic}
+% \usepackage{paralist}
 \usepackage{latexsym,amsmath,url}
 \usepackage{hyperref}
+\usepackage{color}
 \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
 \DeclareMathSymbol{\N}{\mathbin}{AMSb}{"4E}
- \DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmax}{argmax}
 
 \newcommand{\vecb}[1]{\mathbf{#1}}
 \newcommand{\x}{\mathbf{x}} 
 \newcommand{\y}{\mathbf{y}}
 \newcommand{\w}{\mathbf{w}}
+\newcommand{\voc}[1]{\emph{\color{ForestGreen}#1}}
 
 \newcommand{\superscript}[1]{\ensuremath{^\textrm{\scriptsize#1 }}}
 \mode<presentation>{ 
   \usetheme{Boadilla}
   %\setbeamercovered{invisible}
   % or whatever (possibly just delete it)
-} \title[ML Course ]{Introduction to
-  Classification and Sequence Labeling}
+} \title[ML / NLP / MT Course ]{Machine Learning for NLP and MT}
 
 
 \author[Stroppa and Chrupala]{Grzegorz Chrupa{\l}a and Nicolas Stroppa}
 
-\institute[Google + Saarland] % (optional, but mostly needed)
+\institute[Saarland + Google] % (optional, but mostly needed)
 {
 Google\\
 Saarland University
 }
 \date[2010] % (optional, should be abbreviation of conference name)
-{META}
+{META Workshop}
 
 
 \pgfdeclareimage[height=1cm]{UdS}{SaarlandUniversityLogo.jpg}
-%\logo{\pgfuseimage{UdS}}
+% \logo{\pgfuseimage{UdS}}
 
- \AtBeginSection[]
+\AtBeginSection[]
  {
     \begin{frame}
         \frametitle{Outline}
@@ -50,11 +51,316 @@ Saarland University
   \tableofcontents
 \end{frame}
 
+\begin{frame}\frametitle{Goal of the tutorial}
+   When you leave, we hope you will:
+ \begin{itemize}
+     \item Be familiar with main ML approaches, principles and ideas
+     \item Know how to apply usual techniques to common problems
+     \item Master dedicated \voc{vocabulary}
+     \item Come up with ideas related to your projects
+     \item Be a bit tired...
+  \end{itemize}
+\end{frame}
 
-\begin{frame}\frametitle{First slide}
+
+\begin{frame}\frametitle{Disclaimer}
+\begin{block}{}
+\begin{itemize}
+  \item You might be already familiar with a number of things covered in this
+tutorial
+  \item We tried to tell a consistent story instead of copying a textbook
+ \item This is a tutorial by dummies and for everyone
+\end{itemize}
+\end{block}
 
 \end{frame}
 
+\section{Defining our mission}
+\begin{frame}\frametitle{What are you/we doing here? (The Pitch)}
+Here's the situation.
+\begin{itemize}
+  \item You are an employee working in a news aggregation company
+ \item Your main news provider used to assign a category to each news
+    you receive (sports, politics, etc.) but stopped doing it
+  \item Your company still wants this info
+  \item You are the one chosen for this task, that is:
+  \begin{itemize}
+    \item \voc{Classify} each incoming news into one of a
+      list of predefined \voc{categories} or \voc{labels}
+  \end{itemize}
+\end{itemize}
+
+\pause
+\vspace{0.5cm}
+\begin{block}{}
+Along the way of solving this task, we'll familiarize
+    ourselves with a series of ML techniques
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{What are you/we doing here? (The Pitch)}
+.Insert picture of task here.
+\end{frame}
+
+
+\begin{frame}\frametitle{Why you?}
+Why are you chosen to solve this task?
+
+(aka is that really Natural Language Processing?)
+\vspace{0.8cm}
+
+Because:
+\begin{itemize}
+  \item You are the only one not associating morphology with body-building
+  \item You know Zipf is not a rock band
+  \item You don't think Katakana is a motorbike brand
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}\frametitle{Brainstorming session}
+Assuming you need to solve this task \emph{quickly}, what would you do?
+
+How would you approach the problem?
+\vspace{0.8cm}
+
+\pause
+\begin{block}{Some technical details about news}
+\begin{itemize}
+  \item Each news (\voc{document}) is about 300 word long
+  \item They contain a short title
+  \item They are written in English, files are utf8 encoded unicode
+  \item We need to classify 10 news per second
+  \item Targeted market is Europe
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}\frametitle{Possible ideas}
+\begin{itemize}
+  \item Write your idea here
+\end{itemize}
+\end{frame}
+
+
+\section{Playing with Rules}
+\begin{frame}\frametitle{Keywords/Triggers list}
+Lists of well-chosen keywords appearing in news or their titles can form very powerful signals.
+\vspace{0.4cm}
+
+\begin{itemize}
+  \item Sports: Contador, marathon, Liverpool, scores, Ferrari\ldots
+  \item Politics: Obama, government, War, vote, Ban Ki-moon, reform\dots
+  \item Entertainment: Lady Gaga, movies, star, Harry Potter, gossip, show\dots
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Keywords/Triggers list}
+
+How can we convert these lists into an actual algorithm?
+\begin{itemize}
+  \item If news contains words from list $y$, then assign label $y$
+\end{itemize}
+
+\vspace{0.4cm}
+Issues with this approach?
+\pause
+\begin{enumerate}
+  \item Rules can conflict
+  \item Building accurate lists is difficult
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}\frametitle{Keywords/Triggers list}
+
+Solution for conflicting rules?
+\pause
+
+\vspace{0.4cm}
+Idea: we can build different lists with various ``priorities'':
+\begin{itemize}
+\item Sport-1, Sport-2, Sport-3, Politics-1, Politics-2\ldots
+\end{itemize}
+
+\vspace{0.4cm}
+Algo becomes:
+\begin{itemize}
+  \item If news contains words from list $y$-$i$, then assign label $y$.
+  \item In case of conflict, assign label with smaller $i$
+  \item In case of remaining conflict, assign random label among
+    conflicting categories\dots
+\end{itemize}
+
+\pause
+\vspace{0.4cm}
+\begin{itemize}
+\item We just moved one level further, we still have to deal with conflicts\dots
+\item We also made the process of building lists much more complex\dots
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Keywords/Triggers list}
+
+Solution for building accurate lists?
+\pause
+
+\vspace{0.4cm}
+Idea: leverage \voc{labeled} \voc{examples}, i.e.\ news that were
+previously categorized
+
+\vspace{0.4cm}
+We can compute things like the most representative (salient) words/phrases in each category:
+
+% Information Gain: $IG(Y|X) = H(Y) - H(Y|X)$
+% $H(Y)$ is fixed.
+% $H(Y|X) = conditional entropy = Sum_j (prob x = j) H(Y|x=j) = prob (doc
+% has w) * H(Y|doc as w) + prob(doc not has w) * H(Y|doc not has w)$
+
+% $H(Y|doc has w) = - Sum_l p(l) log p(l) [among doc has w]$
+
+% - Singular Value Decomposition (as in LSA)
+
+% => dimensionality reduction
+
+% (used in decision trees)
+% - TF-IDF:
+% [- Chi-Square ]
+% (Zipf here...)
+% ...
+\end{frame}
+
+
+\begin{frame}\frametitle{Where ML comes in}
+
+\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
+\begin{itemize}
+\item \emph{Automatically} defining/learning \voc{strategies for solving rule conflicts}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Examples of rules}
+
+Part-of-Speech tagging
+\begin{itemize}
+\item if word ends with 'ing' and is preceded by word 'is'
+  $\Rightarrow$ Verb present participle
+\item if word = 'both' $\Rightarrow$ Adverb
+\item if word is unknown and starts with a capital $\Rightarrow$
+  Proper Noun
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Examples of rules}
+
+Named-entity recognition
+\begin{itemize}
+\item if word ..., then ...
+\item ...
+\item ...
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Examples of rules}
+
+Machine Translation
+\begin{itemize}
+\item the table $\Rightarrow$ la table (phrase-based)
+\item make X up $\Rightarrow$ inventer X (hierarchical phrase-based)
+\item either NP1 or NP2 $\Rightarrow$ soit NP1 soit NP2 (syntax-based)
+\end{itemize}
+\end{frame}
+
+
+\section{Playing with Data}
+\begin{frame}\frametitle{Data Representation}
+
+What ML is not doing is defining what those rules represent,
+i.e.\ \emph{you} need to decide on a \voc{data representation}.
+
+\vspace{0.4cm}
+For text classification, we implicitely assumed a \voc{bag-of-words} representation, i.e.\
+a vector $f(x)$ whose \voc{dimensions} are words/unigrams, and the
+associated values are the number of occurences of those words in
+document $x$.
+
+\vspace{0.4cm}
+For \voc{sequence labeling}, ...
+
+\vspace{0.4cm}
+For machine translation ...
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Where ML comes in}
+
+\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
+\begin{itemize}
+\item \emph{Automatically} defining/learning \voc{strategies for solving rule conflicts}
+\end{itemize}
+\end{block}
+
+\vspace{0.4cm}
+For example, in \voc{linear models}, a weight/score is automatically assigned to
+each rule, scored are summed over all rules, and conflicts are solved by
+taking the final higher score.
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Where ML comes in}
+
+\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
+\begin{itemize}
+\item \emph{Automatically} defining/learning \voc{strategies for solving rule conflicts}
+\end{itemize}
+\end{block}
+%%  Input = data + data representation + set of rules that can be
+%%  applied to this data representation
+%%  Output = strategies for applying rules to new data...
+
+Wait\dots What about the Rule-based vs.\ Machine Learning approaches opposition?
+
+\pause
+\begin{itemize}
+\item Ad-hoc vs.\ sound rule conflict resolution
+\item ``Hard'' vs.\ ``soft'' rules
+\item Manually vs. meta-manually constructed rules
+\end{itemize}
+%- if rule is useless (or even totally wrong), it won't be used...
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Practical matters}
+Slides to move elsewhere...
+\begin{itemize}
+\item Each ... in the pipeline are important.
+
+Processing issues. issues that are overalooked (?) encoding.  segmentation of sentences, segmentation of words, spell
+
+Hey, I have a system with only 5\% error-rate.
+
+Well, if you plug 6 of those, then you probably have a 26\% error-rate system!
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}\frametitle{Evaluation issues}
+...
+\end{frame}
+% - ... 
+% - Training examples
+%=> Know your data
+%%%  Lists are difficult to build precisely... Goal??  stadium??? liverpool??? david beckham???
 
 
 \end{document}
