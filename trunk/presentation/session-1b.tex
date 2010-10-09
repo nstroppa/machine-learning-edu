@@ -5,7 +5,7 @@
 \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
 \DeclareMathSymbol{\N}{\mathbin}{AMSb}{"4E}
  \DeclareMathOperator*{\argmax}{argmax}
-
+ \DeclareMathOperator*{\sign}{sign}
 \newcommand{\vecb}[1]{\mathbf{#1}}
 \newcommand{\x}{\mathbf{x}} 
 \newcommand{\y}{\mathbf{y}}
@@ -101,8 +101,8 @@ Google
  \item Then
    \[ y = 
    \begin{cases}
-     y_{+} & \text{ if } g(\x) \geq 0\\
-     y_{-} & \text{ otherwise }
+    +1 & \text{ if } g(\x) \geq 0\\
+    -1 & \text{ otherwise }
    \end{cases}
  \]
    \end{itemize}
@@ -142,12 +142,15 @@ Google
 \item \textbf{Perceptron}: A simple mistake-driven online algortihm
 \begin{block}{}
 \begin{itemize}
-\item  Start with a zero weight vector and process each training example in turn. 
-\item If the current weight vector classifies the current example incorrectly, move the weight vector in the right direction. 
+\item Start with a zero weight vector and process each training
+  example in turn.
+\item If the current weight vector classifies the current example
+  incorrectly, move the weight vector in the right direction.
 \item If weights stop changing, stop
 \end{itemize}
 \end{block}
- \item If examples are linearly separable, then this algorithm is guaranteed to converge on the solution vector
+\item If examples are linearly separable, then this algorithm is
+  guaranteed to converge to the solution vector
 \end{itemize}
 \end{frame}
 
@@ -155,40 +158,130 @@ Google
  \frametitle{Fixed increment online perceptron algorithm}
 \begin{itemize}
 \item Binary classification, with classes $+1$ and $-1$
-\item Decision function $y' = \mathrm{sign}(\vecb{w}\cdot \x+b)$
+\item Decision function $y' = \mathrm{sign}(\vecb{w}\cdot \x)$
 \end{itemize}
 
 \begin{block}{\textsc{Perceptron}($x^{1:N},y^{1:N},I$):}
 \begin{algorithmic}[1]
 \STATE $\vecb{w} \leftarrow \vecb{0}$
-\STATE $b \leftarrow 0$
 \FOR {$i = 1...I$}
 	\FOR {$n = 1...N$}
-    		\IF {$y^{(n)} (\vecb{w}\cdot \x^{(n)}+b) \leq 0$}
+    		\IF {$y^{(n)} (\vecb{w}\cdot \x^{(n)}) \leq 0$}
         		\STATE $\vecb{w} \leftarrow \vecb{w} + y^{(n)} \x^{(n)}$
-			\STATE $b \leftarrow b + y^{(n)}$
     		\ENDIF
     	\ENDFOR
 \ENDFOR
-\STATE \textbf{return} $(\vecb{w},b)$
+\STATE \textbf{return} $\vecb{w}$
 \end{algorithmic}                 \end{block}
 \end{frame}
 
 
 \begin{frame}
+  \frametitle{Or more explicitly}
+\begin{algorithmic}[1]
+\STATE $\vecb{w} \leftarrow \vecb{0}$
+\FOR {$i = 1...I$}
+  \FOR {$n = 1...N$}
+    \IF {$y^{(n)} = \sign(\w\cdot \x^{(n)}) $}
+      \STATE pass
+      \ELSIF { $y^{(n)} = +1 \wedge \sign(\w\cdot\x^{(n)}) = -1$ }
+      \STATE $\w \leftarrow \w + \x^{(n)}$
+      \ELSIF { $y^{(n)} = -1 \wedge \sign(\w\cdot\x^{(n)}) = +1$ }
+      \STATE $\w \leftarrow \w - \x^{(n)}$
+    \ENDIF
+   \ENDFOR
+  \ENDFOR
+\STATE \textbf{return} $\vecb{w}$
+\end{algorithmic}
+\end{frame}
+
+\begin{frame}
  \frametitle{Weight averaging}
 \begin{itemize}
- \item Although the algorithm is guaranteed to converge, the solution is not unique!
+\item Although the algorithm is guaranteed to converge, the solution
+  is not unique!
 \item Sensitive to the order in which examples are processed
-\item Separating the training sample does not equal good accuracy on unseen data
-\item Empirically, better generalization performance with \alert{weight averaging}
+\item Separating the training sample does not equal good accuracy on
+  unseen data
+\item Empirically, better generalization performance with
+  \alert{weight averaging}
 \begin{itemize}
 \item A method of avoiding overfitting
-\item As final weight vector, use the mean of all the weight vector values for each step of the algorithm
+\item As final weight vector, use the mean of all the weight vector
+  values for each step of the algorithm
 \end{itemize}
 \end{itemize}
 \end{frame}
 
+
+\section{Na{\"i}ve Bayes}
+\begin{frame}
+  \frametitle{Probabilistic model}
+  \begin{itemize}
+  \item Instead of thinking in terms of multidimensional space...
+  \item Classification can be approached as a probability estimation problem
+  \item We will try to find a probability distribution which
+    \begin{itemize}
+    \item  Describes
+    well our training data 
+  \item Allows us  to make accurate predictions 
+    \end{itemize}
+  \item We'll look at Naive Bayes as a simplest example of a
+    probabilistic classifier
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Classes and features as random variables}
+  \begin{itemize}
+  \item Let $Y$ be a random variable ranging over our classes. 
+  \item For binary classification $Y=+1$ or $Y=-1$
+  \item Let $X_1 ... X_d$ be random variables corresponding to
+    features. 
+  \item For a document, we could have:
+
+    \begin{tabular}{rlllll}
+          &    $X_1$& $X_2$   & $X_3$   & $X_4$   & \\\hline
+          & Obama   & Ferrari & voters  & movies & \\\hline
+$x = ($   & 1       & 0       & 1       & 0 & $)$\\
+    \end{tabular}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Probability}
+  \begin{block}{}
+We need to estimate 
+\[
+P(Y=+1|X=x) = P(Y=+1|X_1=x_1\ldots X_d=x_d) 
+\]
+\end{block}
+\begin{itemize}
+\item But conditioning on $X$ is very hard due to sparseness,
+  especially for high dimensional data.
+\item So, let's use Bayes rule.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bayes rule} Bayes rule determines how joint and
+  conditional probabilities are related.
+ 
+  \begin{block}{}
+\[
+    P(Y=y_i|X=x) = \frac{P(X=x|Y) P(Y=y_i)}{\sum_i P(X=x|Y=y_i)
+      P(Y=y_i)}
+\]
+That is:
+\[
+\mbox{posterior} = \frac{\mbox{prior} \times \mbox{likelihood}}{\mbox{evidence}}
+\]
+\end{block}
+\end{frame}
+
+\section{Logistic regression}
+
+\section{Extra material}
 \begin{frame}
 \frametitle{Efficient averaged perceptron algorithm}
  \begin{block}{\textsc{Perceptron}($x^{1:N},y^{1:N},I$):}
@@ -210,7 +303,5 @@ Google
 \end{algorithmic}                 \end{block}
 \end{frame}
 
-\section{Na{\"i}ve Bayes}
-\section{Logistic regression}
 
 \end{document}
