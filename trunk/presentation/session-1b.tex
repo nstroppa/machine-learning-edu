@@ -231,37 +231,25 @@ Google
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Classes and features as random variables}
-  \begin{itemize}
-  \item Let $Y$ be a random variable ranging over our classes. 
-  \item For binary classification $Y=+1$ or $Y=-1$
-  \item Let $X_1 ... X_d$ be random variables corresponding to
-    features. 
-  \item For a document, we could have:
 
-    \begin{tabular}{rlllll}
-          &    $X_1$& $X_2$   & $X_3$   & $X_4$   & \\\hline
-          & Obama   & Ferrari & voters  & movies & \\\hline
-$x = ($   & 1       & 0       & 1       & 0 & $)$\\
-    \end{tabular}
+\begin{frame}
+  \frametitle{Representation of examples}
+  \begin{itemize}
+    \item We are trying to classify documents. For simplicity let's
+    represent a document as a set of terms (words) it contains $T =
+    \{t_1...t_n\}$
+%  \item If we assume the occurrence of each word to be independent,
+%    then \[
+%    P(T) = \prod_{i=1}^{|T|} P(t_i)
+%    \]
+  \item For (binary) classification we want to find the most probable class:
+    \[ \hat{y} = \argmax_{y \in \{-1,+1\}} P(Y=y|T) \]
+  \item But documents are close to unique: we cannot reliably
+    condition $Y|T$
+  \item Bayes' rule to the rescue
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Probability}
-  \begin{block}{}
-We need to estimate 
-\[
-P(Y=+1|X=x) = P(Y=+1|X_1=x_1\ldots X_d=x_d) 
-\]
-\end{block}
-\begin{itemize}
-\item But conditioning on $X$ is very hard due to sparseness,
-  especially for high dimensional data.
-\item So, let's use Bayes rule.
-\end{itemize}
-\end{frame}
 
 \begin{frame}
   \frametitle{Bayes rule} Bayes rule determines how joint and
@@ -269,14 +257,108 @@ P(Y=+1|X=x) = P(Y=+1|X_1=x_1\ldots X_d=x_d)
  
   \begin{block}{}
 \[
-    P(Y=y_i|X=x) = \frac{P(X=x|Y) P(Y=y_i)}{\sum_i P(X=x|Y=y_i)
-      P(Y=y_i)}
+P(Y=y_i|X=x) = \frac{P(X=x|Y) P(Y=y_i)}{\sum_i P(X=x|Y=y_i)
+  P(Y=y_i)}
 \]
 That is:
 \[
 \mbox{posterior} = \frac{\mbox{prior} \times \mbox{likelihood}}{\mbox{evidence}}
 \]
 \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Prior and likelihood}
+  \begin{itemize}
+  \item With Bayes' rule we can invert the direction of conditioning
+\begin{align}\nonumber
+\hat{y} & = \argmax_y \frac{P(Y=y)P(T|Y=y)}{\sum_y P(Y=y)P(T|Y=y) }\\\nonumber
+        & = \argmax_y P(Y=y)P(T|Y=y)
+\end{align}
+\item Decomposed the task into estimating the prior $P(Y)$ (easy) and
+  the likelihood $P(T|Y=y)$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Conditional independence}
+  \begin{itemize}
+  \item How to estimate $P(T|Y=y)$?
+  \item \alert{Naively} assume the occurrence of each word in the document is
+    independent of the others, when conditioned on the class
+    \[
+    P(T|Y=y) = \prod_{i=1}^{|T|} P(t_i|Y=y)
+    \]
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Naive Bayes decision function}
+  \begin{itemize}
+  \item Putting it together, let 
+    \[
+   \hat{y} = \argmax_y P(Y=y)\prod_{i=1}^{|T|} P(t_i|Y=y)
+    \]
+  \item For binary classification:
+    \[
+    g(T) = P(Y=+1)\prod_{i=1}^{|T|} P(t_i|Y=+1)
+    \]
+    \[
+    \hat{y} = 
+    \begin{cases}
+      +1 \text{ if } g(T) \geq \frac{1}{2}\\
+      -1 \text{ otherwise }
+    \end{cases}
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Documents in vector notation}
+  \begin{itemize}
+  \item Let's represent documents as vocabulary-size-dimensional
+    binary vectors 
+
+    \begin{tabular}{rlllll}
+          &    $t_1$& $t_2$   & $t_3$   & $t_4$   & \\\hline
+          & Obama   & Ferrari & voters  & movies & \\\hline
+$\x = ($   & 1       & 0       & 1       & 0 & $)$\\
+    \end{tabular}
+  \item Dimension $i$ is $1$ if the $i^{th}$ vocabulary item appears in
+    document $\x$, $0$ otherwise
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Naive Bayes in vector notation}
+  \begin{itemize}
+  \item 
+    We only care about terms whose dimensions are on:
+    \[
+      g(\x) = P(+1) \prod_{i=1}^{|V|} P(t_i|+1)^{\color{blue} x_i}
+    \]
+  \item $\log g$ gives the same answers as $g$
+    \begin{align}
+      h(\x) = \log(P(+1)) + \sum_{i=1}^{|V|} \log(P(t_i|+1))\color{blue}x_i
+    \end{align}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Linear classifier}
+  \begin{itemize}
+  \item Remember the linear classifier?
+    \begin{align}\nonumber
+      g(\x) = & w_0               &  & + \sum_{i=1}^d      && w_i 
+                            & x_i \\\nonumber
+      h(\x) = & \log(P(+1))       &  & + \sum_{i=1}^{|V|}  &&  \log(P(t_i|+1))
+                            & x_i 
+    \end{align} 
+  \item Log prior corresponds to the bias term
+  \item Log term probabilities correspond to feature weights
+  \end{itemize}
 \end{frame}
 
 \section{Logistic regression}
@@ -305,3 +387,5 @@ That is:
 
 
 \end{document}
+
+
