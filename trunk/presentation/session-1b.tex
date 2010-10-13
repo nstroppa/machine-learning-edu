@@ -87,7 +87,7 @@ Google
 \item A normal vector of a surface is any vector which is
   perpendicular to it
 \begin{center}
- \includegraphics[scale=0.2]{Normal_vectors2.png}
+ \includegraphics[scale=0.2]{Normal_vectors2.pdf}
  \end{center}
 \end{itemize}
 \end{frame}
@@ -262,7 +262,8 @@ P(Y=y_i|X=x) = \frac{P(X=x|Y) P(Y=y_i)}{\sum_i P(X=x|Y=y_i)
 \]
 That is:
 \[
-\mbox{posterior} = \frac{\mbox{prior} \times \mbox{likelihood}}{\mbox{evidence}}
+\mbox{posterior} = \frac{\mbox{prior} \times
+  \mbox{likelihood}}{\mbox{evidence}}
 \]
 \end{block}
 \end{frame}
@@ -285,8 +286,9 @@ That is:
   \frametitle{Conditional independence}
   \begin{itemize}
   \item How to estimate $P(T|Y=y)$?
-  \item \alert{Naively} assume the occurrence of each word in the document is
-    independent of the others, when conditioned on the class
+  \item \alert{Naively} assume the occurrence of each word in the
+    document is independent of the others, when conditioned on the
+    class
     \[
     P(T|Y=y) = \prod_{i=1}^{|T|} P(t_i|Y=y)
     \]
@@ -295,20 +297,27 @@ That is:
 
 
 
-\begin{frame}\frametitle{Naive Bayes decision function}
-  \begin{itemize}
-  \item Putting it together, let 
+\begin{frame}\frametitle{Naive Bayes}
+  \begin{block}{Putting it all together}
     \[
    \hat{y} = \argmax_y P(Y=y)\prod_{i=1}^{|T|} P(t_i|Y=y)
     \]
+\end{block}
+\end{frame}
+
+
+\begin{frame}\frametitle{Decision function}
+\begin{itemize}
   \item For binary classification:
-    \[
-    g(T) = P(Y=+1)\prod_{i=1}^{|T|} P(t_i|Y=+1)
-    \]
+    \begin{align}\nonumber
+    g(T) & = \frac{P(Y=+1)\prod_{i=1}^{|T|} P(t_i|Y=+1)}
+                {P(Y=-1)\prod_{i=1}^{|T|} P(t_i|Y=-1)}\\\nonumber
+         & = \frac{P(Y=+1)}{P(Y=-1)}\prod_{i=1}^{|T|} \frac{P(t_i|Y=+1)}{P(t_i|Y=-1)}
+    \end{align}
     \[
     \hat{y} = 
     \begin{cases}
-      +1 \text{ if } g(T) \geq \frac{1}{2}\\
+      +1 \text{ if } g(T) \geq 1\\
       -1 \text{ otherwise }
     \end{cases}
     \]
@@ -337,11 +346,11 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
   \item 
     We only care about terms whose dimensions are on:
     \[
-      g(\x) = P(+1) \prod_{i=1}^{|V|} P(t_i|+1)^{\color{blue} x_i}
+      g(\x) = \frac{P(+1)}{P(-1)} \prod_{i=1}^{|V|} \left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)^{\color{blue} x_i}
     \]
-  \item $\log g$ gives the same answers as $g$
+  \item $\ln g$ gives the same answers as $g$
     \begin{align}
-      h(\x) = \log(P(+1)) + \sum_{i=1}^{|V|} \log(P(t_i|+1))\color{blue}x_i
+      h(\x) = \ln\left(\frac{P(+1)}{P(-1)}\right) + \sum_{i=1}^{|V|} \ln\left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)\color{blue}x_i
     \end{align}
   \end{itemize}
 \end{frame}
@@ -353,11 +362,11 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
     \begin{align}\nonumber
       g(\x) = & w_0               &  & + \sum_{i=1}^d      && w_i 
                             & x_i \\\nonumber
-      h(\x) = & \log(P(+1))       &  & + \sum_{i=1}^{|V|}  &&  \log(P(t_i|+1))
+      h(\x) = &  \ln\left(\frac{P(+1)}{P(-1)}\right)      &  & + \sum_{i=1}^{|V|}  &&  \ln\left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)
                             & x_i 
     \end{align} 
-  \item Log prior corresponds to the bias term
-  \item Log term probabilities correspond to feature weights
+  \item Log prior ratio corresponds to the bias term
+  \item Log term probability ratios correspond to feature weights
   \end{itemize}
 \end{frame}
 
