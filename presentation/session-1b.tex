@@ -348,7 +348,8 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
     \[
       g(\x) = \frac{P(+1)}{P(-1)} \prod_{i=1}^{|V|} \left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)^{\color{blue} x_i}
     \]
-  \item $\ln g$ gives the same answers as $g$
+  \item If we take the logarithm of the threshold ($\ln 1 = 0$) and
+    $g$, we'll get the same decision function
     \begin{align}
       h(\x) = \ln\left(\frac{P(+1)}{P(-1)}\right) + \sum_{i=1}^{|V|} \ln\left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)\color{blue}x_i
     \end{align}
@@ -366,9 +367,45 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
                             & x_i 
     \end{align} 
   \item Log prior ratio corresponds to the bias term
-  \item Log term probability ratios correspond to feature weights
+  \item Log likelihood ratios correspond to feature weights
   \end{itemize}
 \end{frame}
+
+
+\begin{frame}
+  \frametitle{What is the difference}
+  Training criterion and procedure
+  \begin{block}{Perceptron}
+    \begin{itemize}
+    \item Zero-one loss function    
+      \[
+      \mathit{error}(\w,D) = \sum_{(\x,y) \in D}
+      \begin{cases}
+        0 \text{ if } \sign(\w \cdot \x) = y\\
+        1 \text{ otherwise }
+      \end{cases}
+      \]
+    \item Error-driven algorithm
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{What is the difference}
+  \begin{block}{ Naive Bayes}
+    \begin{itemize}
+  \item Maximum Likelihood criterion 
+    \[
+    P(D|\pi,\theta) = \prod_{(\x,y) \in D} \left(
+      P(y|\pi)\prod_{i=1}^{|V|}P(t_i|\theta_y)\right)
+    \]
+    Parameters reduce to relative counts
+  \item + Ad-hoc smoothing
+  \item Or Bayesian alternatives (e.g.\ maximum a posteriori)
+  \end{itemize}
+\end{block}
+\end{frame}
+
 
 \section{Logistic regression}
 
