@@ -235,17 +235,14 @@ Google
 \begin{frame}
   \frametitle{Representation of examples}
   \begin{itemize}
-    \item We are trying to classify documents. For simplicity let's
-    represent a document as a set of terms (words) it contains $T =
-    \{t_1...t_n\}$
-%  \item If we assume the occurrence of each word to be independent,
-%    then \[
-%    P(T) = \prod_{i=1}^{|T|} P(t_i)
-%    \]
+    \item We are trying to classify documents. Let's
+    represent a document as a sequence of terms (words) it contains
+    $\mathbf{t} = (t_1...t_n)$
+
   \item For (binary) classification we want to find the most probable class:
-    \[ \hat{y} = \argmax_{y \in \{-1,+1\}} P(Y=y|T) \]
+    \[ \hat{y} = \argmax_{y \in \{-1,+1\}} P(Y=y|\mathbf{t}) \]
   \item But documents are close to unique: we cannot reliably
-    condition $Y|T$
+    condition $Y|\mathbf{t}$
   \item Bayes' rule to the rescue
   \end{itemize}
 \end{frame}
@@ -273,11 +270,11 @@ That is:
   \begin{itemize}
   \item With Bayes' rule we can invert the direction of conditioning
 \begin{align}\nonumber
-\hat{y} & = \argmax_y \frac{P(Y=y)P(T|Y=y)}{\sum_y P(Y=y)P(T|Y=y) }\\\nonumber
-        & = \argmax_y P(Y=y)P(T|Y=y)
+\hat{y} & = \argmax_y \frac{P(Y=y)P(\mathbf{t}|Y=y)}{\sum_y P(Y=y)P(\mathbf{t}|Y=y) }\\\nonumber
+        & = \argmax_y P(Y=y)P(\mathbf{t}|Y=y)
 \end{align}
 \item Decomposed the task into estimating the prior $P(Y)$ (easy) and
-  the likelihood $P(T|Y=y)$
+  the likelihood $P(\mathbf{t}|Y=y)$
   \end{itemize}
 \end{frame}
 
@@ -285,12 +282,12 @@ That is:
 \begin{frame}
   \frametitle{Conditional independence}
   \begin{itemize}
-  \item How to estimate $P(T|Y=y)$?
+  \item How to estimate $P(\mathbf{t}|Y=y)$?
   \item \alert{Naively} assume the occurrence of each word in the
     document is independent of the others, when conditioned on the
     class
     \[
-    P(T|Y=y) = \prod_{i=1}^{|T|} P(t_i|Y=y)
+    P(\mathbf{t}|Y=y) = \prod_{i=1}^{|\mathbf{t}|} P(t_i|Y=y)
     \]
   \end{itemize}
 \end{frame}
@@ -300,7 +297,7 @@ That is:
 \begin{frame}\frametitle{Naive Bayes}
   \begin{block}{Putting it all together}
     \[
-   \hat{y} = \argmax_y P(Y=y)\prod_{i=1}^{|T|} P(t_i|Y=y)
+   \hat{y} = \argmax_y P(Y=y)\prod_{i=1}^{|\mathbf{t}|} P(t_i|Y=y)
     \]
 \end{block}
 \end{frame}
@@ -310,14 +307,14 @@ That is:
 \begin{itemize}
   \item For binary classification:
     \begin{align}\nonumber
-    g(T) & = \frac{P(Y=+1)\prod_{i=1}^{|T|} P(t_i|Y=+1)}
-                {P(Y=-1)\prod_{i=1}^{|T|} P(t_i|Y=-1)}\\\nonumber
-         & = \frac{P(Y=+1)}{P(Y=-1)}\prod_{i=1}^{|T|} \frac{P(t_i|Y=+1)}{P(t_i|Y=-1)}
+    g(\mathbf{t}) & = \frac{P(Y=+1)\prod_{i=1}^{|\mathbf{t}|} P(t_i|Y=+1)}
+                {P(Y=-1)\prod_{i=1}^{|\mathbf{t}|} P(t_i|Y=-1)}\\\nonumber
+         & = \frac{P(Y=+1)}{P(Y=-1)}\prod_{i=1}^{|\mathbf{t}|} \frac{P(t_i|Y=+1)}{P(t_i|Y=-1)}
     \end{align}
     \[
     \hat{y} = 
     \begin{cases}
-      +1 \text{ if } g(T) \geq 1\\
+      +1 \text{ if } g(\mathbf{t}) \geq 1\\
       -1 \text{ otherwise }
     \end{cases}
     \]
@@ -331,12 +328,12 @@ That is:
     binary vectors 
 
     \begin{tabular}{rlllll}
-          &    $t_1$& $t_2$   & $t_3$   & $t_4$   & \\\hline
+          &    $V_1$& $V_2$   & $V_3$   & $V_4$   & \\\hline
           & Obama   & Ferrari & voters  & movies & \\\hline
-$\x = ($   & 1       & 0       & 1       & 0 & $)$\\
+$\x = ($   & 1       & 0       & 2       & 0 & $)$\\
     \end{tabular}
-  \item Dimension $i$ is $1$ if the $i^{th}$ vocabulary item appears in
-    document $\x$, $0$ otherwise
+  \item Dimension $i$ indicates how many times the $i^{th}$ vocabulary
+    item appears in document $\x$
   \end{itemize}
 \end{frame}
 
@@ -344,14 +341,14 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
   \frametitle{Naive Bayes in vector notation}
   \begin{itemize}
   \item 
-    We only care about terms whose dimensions are on:
+    Counts appear as exponents:
     \[
-      g(\x) = \frac{P(+1)}{P(-1)} \prod_{i=1}^{|V|} \left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)^{\color{blue} x_i}
+      g(\x) = \frac{P(+1)}{P(-1)} \prod_{i=1}^{|V|} \left(\frac{P(V_i|+1)}{P(V_i|-1)}\right)^{\color{blue} x_i}
     \]
   \item If we take the logarithm of the threshold ($\ln 1 = 0$) and
     $g$, we'll get the same decision function
     \begin{align}
-      h(\x) = \ln\left(\frac{P(+1)}{P(-1)}\right) + \sum_{i=1}^{|V|} \ln\left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)\color{blue}x_i
+      h(\x) = \ln\left(\frac{P(+1)}{P(-1)}\right) + \sum_{i=1}^{|V|} \ln\left(\frac{P(V_i|+1)}{P(V_i|-1)}\right)\color{blue}x_i
     \end{align}
   \end{itemize}
 \end{frame}
@@ -363,7 +360,7 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
     \begin{align}\nonumber
       g(\x) = & w_0               &  & + \sum_{i=1}^d      && w_i 
                             & x_i \\\nonumber
-      h(\x) = &  \ln\left(\frac{P(+1)}{P(-1)}\right)      &  & + \sum_{i=1}^{|V|}  &&  \ln\left(\frac{P(t_i|+1)}{P(t_i|-1)}\right)
+      h(\x) = &  \ln\left(\frac{P(+1)}{P(-1)}\right)      &  & + \sum_{i=1}^{|V|}  &&  \ln\left(\frac{P(V_i|+1)}{P(V_i|-1)}\right)
                             & x_i 
     \end{align} 
   \item Log prior ratio corresponds to the bias term
@@ -391,19 +388,37 @@ $\x = ($   & 1       & 0       & 1       & 0 & $)$\\
 \end{frame}
 
 \begin{frame}
-  \frametitle{What is the difference}
   \begin{block}{ Naive Bayes}
     \begin{itemize}
   \item Maximum Likelihood criterion 
     \[
-    P(D|\pi,\theta) = \prod_{(\x,y) \in D} \left(
-      P(y|\pi)\prod_{i=1}^{|V|}P(t_i|\theta_y)\right)
+    P(D|\theta) = \prod_{(\x,y) \in D} P(Y=y|\theta)P(x|Y=y,\theta)
     \]
+  \item Find parameters which maximize the log likelihood
+    \begin{align}\nonumber
+    \hat{\theta} & = \argmax_{\theta} \log(P(D|\theta))
+    \end{align}
     Parameters reduce to relative counts
   \item + Ad-hoc smoothing
-  \item Or Bayesian alternatives (e.g.\ maximum a posteriori)
+  \item Alternatives (e.g.\ maximum {\it a posteriori})
   \end{itemize}
 \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comparison}
+  \begin{center}
+  \begin{tabular}{l|l|l}
+    Model          & Naive Bayes & Perceptron \\\hline
+    Model power    & Linear      & Linear\\
+    Type           & Generative  & Discriminative\\
+    Distribution 
+    modeled        & $P(\x,y)$   & N/A \\
+    Smoothing      & Crucial     & Optional\\
+    Independence 
+    assumptions    & Strong      & None \\
+  \end{tabular}   
+  \end{center}
 \end{frame}
 
 
