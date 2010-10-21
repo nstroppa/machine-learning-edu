@@ -340,7 +340,10 @@ E_{P(\z'|\x;\w)} \Phi(\x,\z') = \sum_{z'} \Phi(\x,\z') \frac{\exp(\w . \Phi(\x,\
 \end{equation*}
 and
 \begin{equation*}
-\Phi(\x_i,\hat{\z}_i') = \sum_{z'} \Phi(\x,\z') (1 if z' is best output, 0 otherwise).
+\Phi(\x_i,\hat{\z}_i') = \sum_{z'} \Phi(\x,\z') \begin{cases}
+  1  \text{ if z' is best output}\\
+  0  \text{ otherwise }
+\end{cases}
 \end{equation*}
 
 \vspace{0.4cm}
