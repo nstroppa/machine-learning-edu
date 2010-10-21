@@ -19,15 +19,15 @@
   \usetheme{Boadilla}
   %\setbeamercovered{invisible}
   % or whatever (possibly just delete it)
-} \title[ML / NLP / MT Course ]{Machine Learning for NLP and MT}
+} \title[ML / NLP Course ]{Machine Learning for NLP}
 
 
 \author[Stroppa and Chrupala]{Grzegorz Chrupa{\l}a and Nicolas Stroppa}
 
-\institute[Saarland + Google] % (optional, but mostly needed)
+\institute[] % (optional, but mostly needed)
 {
-Google\\
-Saarland University
+Saarland University\\
+Google
 }
 \date[2010] % (optional, should be abbreviation of conference name)
 {META Workshop}
@@ -62,7 +62,6 @@ Saarland University
   \end{itemize}
 \end{frame}
 
-
 \begin{frame}\frametitle{Disclaimer}
 \begin{block}{}
 \begin{itemize}
@@ -75,7 +74,30 @@ tutorial
 
 \end{frame}
 
-\section{Defining our mission}
+
+\begin{frame}\frametitle{Program}
+\begin{block}{Monday, Oct.\ 18}
+\begin{itemize}
+  \item 10am-11h30am: Introduction and text classification
+  \item 11h45am-1pm: Classification (part 1)
+  \item 2h30pm-3h30pm: Classification (part 2)
+  \item 3h45pm-5pm: Sequence labeling (part 1)
+\end{itemize}
+\end{block}
+
+\begin{block}{Tuesday, Oct.\ 19}
+\begin{itemize}
+  \item 10am-11h30am: Sequence labeling (part 2)
+  \item 11h45am-1pm: Theoretical and practical matters
+  \item 2h30pm-3h30pm: Open session and exercises
+  \item 3h45pm-5pm: Open session and exercises
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\section{Defining our Mission}
 \begin{frame}\frametitle{What are you/we doing here? (The Pitch)}
 Here's the situation.
 \begin{itemize}
@@ -100,9 +122,9 @@ Along the way of solving this task, we'll familiarize
 \end{frame}
 
 
-\begin{frame}\frametitle{What are you/we doing here? (The Pitch)}
-.Insert picture of task here.
-\end{frame}
+%\begin{frame}\frametitle{What are you/we doing here? (The Pitch)}
+%.Insert picture of task here.
+%\end{frame}
 
 
 \begin{frame}\frametitle{Why you?}
@@ -141,13 +163,13 @@ How would you approach the problem?
 
 \begin{frame}\frametitle{Possible ideas}
 \begin{itemize}
-  \item Write your idea here
+  \item \ldots
 \end{itemize}
 \end{frame}
 
 
 \section{Playing with Rules}
-\begin{frame}\frametitle{Keywords/Triggers list}
+\begin{frame}\frametitle{Keywords/Triggers lists}
 Lists of well-chosen keywords appearing in news or their titles can form very powerful signals.
 \vspace{0.4cm}
 
@@ -158,7 +180,7 @@ Lists of well-chosen keywords appearing in news or their titles can form very po
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Keywords/Triggers list}
+\begin{frame}\frametitle{Keywords/Triggers lists}
 
 How can we convert these lists into an actual algorithm?
 \begin{itemize}
@@ -174,8 +196,7 @@ Issues with this approach?
 \end{enumerate}
 \end{frame}
 
-
-\begin{frame}\frametitle{Keywords/Triggers list}
+\begin{frame}\frametitle{Conflicting rules}
 
 Solution for conflicting rules?
 \pause
@@ -204,9 +225,243 @@ Algo becomes:
 \end{frame}
 
 
-\begin{frame}\frametitle{Keywords/Triggers list}
+\begin{frame}\frametitle{Where ML comes in}
+
+\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
+\begin{itemize}
+\item \emph{Automatically} defining/learning, \voc{from data}, \voc{strategies for solving rule conflicts}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Examples of rules (Part-of-Speech Tagging)}
+
+\begin{itemize}
+\item if token ends with 'ing' and is preceded by token 'is'
+\begin{itemize}
+\item $\Rightarrow$ label = Verb present participle
+\end{itemize}
+\item if token = 'both'
+\begin{itemize}
+\item $\Rightarrow$ label = Adverb
+\end{itemize}
+\item if token is unknown and starts with a capital
+\begin{itemize}
+\item $\Rightarrow$  label = Proper Noun
+\end{itemize}
+\item if previous label = Adjective
+\begin{itemize}
+\item $\Rightarrow$ label = Noun
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Examples of rules (Named-Entity Recognition)}
+
+\begin{itemize}
+\item if token = 'Obama'
+\begin{itemize}
+\item $\Rightarrow$ label = Person Name
+\end{itemize}
+\item if token in city list
+\begin{itemize}
+\item $\Rightarrow$ label = City
+\end{itemize}
+\item if token matches the regexp '[A-Za-z]+[0-9]+' and previous label
+  = Brand
+\begin{itemize}
+\item $\Rightarrow$ label = Product model
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}\frametitle{Examples of rules (Machine Translation)}
+
+\begin{itemize}
+\item the table
+\begin{itemize}
+\item $\Rightarrow$ la table
+\end{itemize}
+\item make X up 
+\begin{itemize}
+\item $\Rightarrow$ inventer X
+\end{itemize}
+\item either NP1 or NP2
+\begin{itemize}
+\item $\Rightarrow$ soit NP1 soit NP2
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Examples of rules (Machine Translation)}
+
+\begin{itemize}
+\item the table
+\begin{itemize}
+\item $\Rightarrow$ la table (phrase-based)
+\end{itemize}
+\item make X up 
+\begin{itemize}
+\item $\Rightarrow$ inventer X (hierarchical phrase-based)
+\end{itemize}
+\item either NP1 or NP2
+\begin{itemize}
+\item $\Rightarrow$ soit NP1 soit NP2 (syntax-based)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Playing with Data}
+
+\begin{frame}\frametitle{Where ML comes in}
+
+\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
+\begin{itemize}
+\item \emph{Automatically} defining/learning, \voc{from data}, \voc{strategies for solving rule conflicts}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}\frametitle{Data Representation - Text classification}
+
+What ML is not doing is defining what those rules represent,
+i.e.\ \emph{you} need to decide on a \voc{data representation}.
+
+\vspace{0.4cm}
+For text classification, we implicitly assumed a \voc{bag-of-words} representation, i.e.\
+a vector $\x$ whose \voc{dimensions} are words/unigrams, and the
+associated values are the number of occurences of those words in
+document $x$.
+
+\vspace{0.4cm}
+The data representation must be:
+\begin{itemize}
+\item \voc{expressive} enough to allow you define interesting rules
+  for your problem
+\item \voc{simple} enough to allow models to be learned\pause, in a tractable and
+  efficient way
+\end{itemize}
+$\Rightarrow$ Obviously, sometimes, tradeoffs must be made\ldots
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Data Representation - Sequence Labeling}
+
+\vspace{0.4cm}
+In \voc{Sequence Labeling}, we usually represent the input and the output
+as sequences (size = sentence length).
+
+\vspace{0.4cm}
+We usually want rules to be applicable to tokens and their neighbours.
+
+% \vspace{0.4cm}
+% Obama really likes the Nikon D90.
+\end{frame}
+
+
+\begin{frame}\frametitle{Data Representation - Machine Translation}
+
+In Machine Translation, we usually represent the input and the output
+as sequences (size = sentence length).
+
+\vspace{0.4cm}
+The representation must also take into account \voc{hidden} structures such
+as:
+\begin{itemize}
+\item alignments
+\item parse trees
+\item reordering models
+\end{itemize}
+
+\vspace{0.4cm}
+Again, there is often a tradeoff to make between expressiveness and
+simplicity/efficiency\ldots
+
+\end{frame}
+
+\begin{frame}\frametitle{Know your Data!}
+
+\begin{itemize}
+\item Chosing a proper data representation is crucial
+\item This choice is application dependent
+\item Can only be done by an expert that knows which rules are
+useful and need to be defined\ldots
+\item This is a vision of the world, different visions/views can be
+  combined
+\item Be aware of the implications of the approximations you're making
+\item \pause The learning algo itself (almost) doesn't matter\ldots
+  (don't say it loud)
+\end{itemize}
+
+\vspace{0.4cm}
+\pause
+Personal note: I've seen a number of ML projects failed simply because
+some people thought ML could automagically understand the data in their place...
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Rule-based approaches and ML}
+
+\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
+\begin{itemize}
+\item \emph{Automatically} defining/learning, \voc{from data}, \voc{strategies for solving rule conflicts}
+\end{itemize}
+\end{block}
+%%  Input = data + data representation + set of rules that can be
+%%  applied to this data representation
+%%  Output = strategies for applying rules to new data...
+
+Hmm\ldots Wait\ldots What about Rule-based approaches vs.\ Machine
+Learning?
+
+\vspace{0.4cm}
+\pause
+\begin{itemize}
+\item Ad-hoc vs.\ Sound rule conflict resolution
+\begin{itemize}
+\item ``Hard'' vs.\ ``Soft'' rules
+\end{itemize}
+\item Manually vs.\ Meta-manually constructed rules (automatically
+  generated rules)
+\item Usually different expressiveness/efficiency tradeoff
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Keywords/Triggers lists issues (cont.)}
+
+How can we convert these lists into an actual algorithm?
+\begin{itemize}
+  \item If news contains words from list $y$, then assign label $y$
+\end{itemize}
+
+\vspace{0.4cm}
+Issues with this approach?
+\pause
+\begin{enumerate}
+  \item Rules can conflict
+  \item Building accurate lists is difficult
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}\frametitle{Automatically building lists}
 
 Solution for building accurate lists?
+\begin{itemize}
+\item we want to automatically generate those lists
+\item we manually fix a framework, but the rules are automatically
+  extracted (meta-manually constructed)
+\end{itemize}
 \pause
 
 \vspace{0.4cm}
@@ -214,153 +469,103 @@ Idea: leverage \voc{labeled} \voc{examples}, i.e.\ news that were
 previously categorized
 
 \vspace{0.4cm}
-We can compute things like the most representative (salient) words/phrases in each category:
+We can compute things like the most representative (salient)
+words/phrases in each category.
+\end{frame}
 
-% Information Gain: $IG(Y|X) = H(Y) - H(Y|X)$
+\begin{frame}\frametitle{Automatically building lists}
+
+\vspace{0.4cm}
+We can compute things like the most representative (salient)
+words/phrases in each category.
+
+For example, we can compute conditional entropy:
+\begin{equation*}
+H(Y|X) = - \sum_l p(l|X) \log p(l|X),
+\end{equation*}
+where $l$ is the output label and $X$ a variable corresponding to ``document contains a given word $w$''.
+
+(Related to Information gain through $IG(Y|X) = H(Y) - H(Y|X)$)
+
 % $H(Y)$ is fixed.
-% $H(Y|X) = conditional entropy = Sum_j (prob x = j) H(Y|x=j) = prob (doc
-% has w) * H(Y|doc as w) + prob(doc not has w) * H(Y|doc not has w)$
-
+% $H(Y|X) = conditional entropy = Sum_j (prob x = j) H(Y|x=j) = prob (doc has w) * H(Y|doc as w) + prob(doc not has w) * H(Y|doc not has w)$
 % $H(Y|doc has w) = - Sum_l p(l) log p(l) [among doc has w]$
-
 % - Singular Value Decomposition (as in LSA)
-
-% => dimensionality reduction
-
 % (used in decision trees)
-% - TF-IDF:
-% [- Chi-Square ]
-% (Zipf here...)
-% ...
+\end{frame}
+
+\begin{frame}\frametitle{Data/Rule preparation}
+
+By doing a pre-selection or a pre-scoring of the rules, we are performing:
+\begin{itemize}
+\item \voc{Feature selection}
+\item Feature weighting
+\end{itemize}
+
+\vspace{0.4cm}
+By operating a feature selection, we're \voc{reducing the dimensionality} of
+the input space.
+
+This decreases expressiveness, but increases learnability.  So, if
+performed carefully, will improve quality of the learned models.
+
+\vspace{0.4cm}
+Again, this is about knowing your data\ldots
+
 \end{frame}
 
 
-\begin{frame}\frametitle{Where ML comes in}
+\begin{frame}\frametitle{Data/Rule preparation}
+
+Such ``rule preparations'' are really important.
+
+In the case of news classification, we can also mention things like
+\begin{itemize}
+\item tokenization (phrase?  multi-word exp?  CJK languages? \ldots)
+\item spelling normalization
+\item orthographic normalization
+\item morphological normalization and variants
+\item specific rules for titles
+\item entity recognition
+\item TF-IDF-like transformations (cf. Zipf law)
+\item \ldots
+\end{itemize}
+
+\vspace{0.4cm}
+This can be considered pre-processing, but it also can be considered
+part of the data representation considerations.
+
+\end{frame}
+
+% \begin{frame}\frametitle{ML ...: an overview}
+
+% \begin{itemize}
+% \item \voc{Training data}:  input data given to the learning algorithm,
+% comprising of a set of \voc{training examples}
+% \item \voc{Supervised learning}:  training examples are pairs $(\x,
+%   \y)$ where $x$ is an input and $y$ the corresponding output
+% \item Generalization
+% %% induction, transduction...
+% \end{frame}
+
+
+\begin{frame}\frametitle{Solving conflicts with linear models}
 
 \begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
 \begin{itemize}
-\item \emph{Automatically} defining/learning \voc{strategies for solving rule conflicts}
-\end{itemize}
-\end{block}
-
-\end{frame}
-
-
-\begin{frame}\frametitle{Examples of rules}
-
-Part-of-Speech tagging
-\begin{itemize}
-\item if word ends with 'ing' and is preceded by word 'is'
-  $\Rightarrow$ Verb present participle
-\item if word = 'both' $\Rightarrow$ Adverb
-\item if word is unknown and starts with a capital $\Rightarrow$
-  Proper Noun
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Examples of rules}
-
-Named-entity recognition
-\begin{itemize}
-\item if word ..., then ...
-\item ...
-\item ...
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Examples of rules}
-
-Machine Translation
-\begin{itemize}
-\item the table $\Rightarrow$ la table (phrase-based)
-\item make X up $\Rightarrow$ inventer X (hierarchical phrase-based)
-\item either NP1 or NP2 $\Rightarrow$ soit NP1 soit NP2 (syntax-based)
-\end{itemize}
-\end{frame}
-
-
-\section{Playing with Data}
-\begin{frame}\frametitle{Data Representation}
-
-What ML is not doing is defining what those rules represent,
-i.e.\ \emph{you} need to decide on a \voc{data representation}.
-
-\vspace{0.4cm}
-For text classification, we implicitely assumed a \voc{bag-of-words} representation, i.e.\
-a vector $f(x)$ whose \voc{dimensions} are words/unigrams, and the
-associated values are the number of occurences of those words in
-document $x$.
-
-\vspace{0.4cm}
-For \voc{sequence labeling}, ...
-
-\vspace{0.4cm}
-For machine translation ...
-
-\end{frame}
-
-
-\begin{frame}\frametitle{Where ML comes in}
-
-\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
-\begin{itemize}
-\item \emph{Automatically} defining/learning \voc{strategies for solving rule conflicts}
+\item \emph{Automatically} defining/learning, \voc{from data}, \voc{strategies for solving rule conflicts}
 \end{itemize}
 \end{block}
 
 \vspace{0.4cm}
 For example, in \voc{linear models}, a weight/score is automatically assigned to
-each rule, scored are summed over all rules, and conflicts are solved by
-taking the final higher score.
+each rule, scored are summed over all rules (hence linear), and
+conflicts are solved by taking the final higher score.
 
-\end{frame}
-
-
-\begin{frame}\frametitle{Where ML comes in}
-
-\begin{block}{Machine Learning gives sound and theoretically-rooted principles for:}
-\begin{itemize}
-\item \emph{Automatically} defining/learning \voc{strategies for solving rule conflicts}
-\end{itemize}
-\end{block}
-%%  Input = data + data representation + set of rules that can be
-%%  applied to this data representation
-%%  Output = strategies for applying rules to new data...
-
-Wait\dots What about the Rule-based vs.\ Machine Learning approaches opposition?
-
+\vspace{0.4cm}
 \pause
-\begin{itemize}
-\item Ad-hoc vs.\ sound rule conflict resolution
-\item ``Hard'' vs.\ ``soft'' rules
-\item Manually vs. meta-manually constructed rules
-\end{itemize}
-%- if rule is useless (or even totally wrong), it won't be used...
-
+But Grzegorz will explain it better\ldots
 \end{frame}
-
-
-\begin{frame}\frametitle{Practical matters}
-Slides to move elsewhere...
-\begin{itemize}
-\item Each ... in the pipeline are important.
-
-Processing issues. issues that are overalooked (?) encoding.  segmentation of sentences, segmentation of words, spell
-
-Hey, I have a system with only 5\% error-rate.
-
-Well, if you plug 6 of those, then you probably have a 26\% error-rate system!
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}\frametitle{Evaluation issues}
-...
-\end{frame}
-% - ... 
-% - Training examples
-%=> Know your data
-%%%  Lists are difficult to build precisely... Goal??  stadium??? liverpool??? david beckham???
 
 
 \end{document}
