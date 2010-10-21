@@ -1,25 +1,31 @@
-\documentclass[14pt,mathserif]{beamer}
+\documentclass[14pt,mathserif,dvipsnames,usenames]{beamer}
 \usepackage[noend]{algorithmic}
 \usepackage{latexsym,amsmath,url}
 \usepackage{hyperref}
+\usepackage{color}
 \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
 \DeclareMathSymbol{\N}{\mathbin}{AMSb}{"4E}
  \DeclareMathOperator*{\argmax}{argmax}
+ \DeclareMathOperator*{\argmin}{argmin}
  \DeclareMathOperator*{\sign}{sign}
 \newcommand{\vecb}[1]{\mathbf{#1}}
 \newcommand{\x}{\mathbf{x}} 
 \newcommand{\y}{\mathbf{y}}
 \newcommand{\w}{\mathbf{w}}
+\newcommand{\W}{\mathbf{W}}
+
+ \newcommand{\voc}[1]{{\color{ForestGreen}#1}}
+%\newcommand{\voc}[1]{#1}
 
 \newcommand{\superscript}[1]{\ensuremath{^\textrm{\scriptsize#1 }}}
 \mode<presentation>{ 
   \usetheme{Boadilla}
-} \title[ML / NLP / MT Course ]{ Machine Learning for NLP and MT }
+} \title[Linear models ]{ Linear models for classification }
 
 
 \author[Chrupala and Stroppa]{Grzegorz Chrupa{\l}a and Nicolas Stroppa}
 
-\institute[Saarland+Google] % (optional, but mostly needed)
+\institute[UdS] % (optional, but mostly needed)
 {
 Saarland University\\
 Google
@@ -49,22 +55,30 @@ Google
 \section{Linear models}
 
 \begin{frame}
+\frametitle{An example}
+Positive examples are blank, negative are filled
+\begin{center}
+\vskip -0.5cm 
+\includegraphics[scale=0.4]{linear.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}
   \frametitle{Linear models}
   \begin{block}{}
-    Think of training examples as points in $d$-dimensional
-    space. Each dimension corresponds to one feature.
+    Think of \voc{training examples} as points in $d$-dimensional
+    space. Each dimension corresponds to one \voc{feature}.
   \end{block}
   \begin{block}{}
     A linear binary classifier defines a plane in the space which
-    separates positive from negative examples. 
+    separates \voc{positive} from \voc{negative} examples. 
   \end{block}
-
 \end{frame}
 
 \begin{frame}
  \frametitle{Linear decision boundary}
 \begin{itemize}
-\item A \alert{hyperplane} is a generalization of a straight line to
+\item A \voc{hyperplane} is a generalization of a straight line to
   $>2$ dimensions
 \item A hyperplane contains all the points in a $d$ dimensional space satisfying the following equation:
 \[
@@ -73,7 +87,7 @@ Google
 \item Each coefficient $w_i$ can be thought of as a weight on the
   corresponding feature
 \item The vector containing all the weights $\w = (w_0,\ldots,w_d)$ is the
-  \alert{parameter vector} or \alert{weigth vector}
+  \voc{parameter vector} or \voc{weigth vector}
 \end{itemize}
 \end{frame}
 
@@ -82,7 +96,7 @@ Google
 \begin{frame}
  \frametitle{Normal vector}
 \begin{itemize}
-\item Geometrically, the weight vector $\w$ is a \alert{normal vector}
+\item Geometrically, the weight vector $\w$ is a \voc{normal vector}
   of the separating hyperplane
 \item A normal vector of a surface is any vector which is
   perpendicular to it
@@ -99,7 +113,7 @@ Google
      g(\x) =  w_1x_1 + w_2x_2, \ldots, + w_dx_d + w_0
      \]
  \item Then
-   \[ y = 
+   \[ y = \sign( g(\x) ) =
    \begin{cases}
     +1 & \text{ if } g(\x) \geq 0\\
     -1 & \text{ otherwise }
@@ -117,21 +131,34 @@ Google
   weight vector and add a dummy component to the feature vector
 \item Set this component to $x_0 = 1$
 \item Then 
- \begin{align}
+ \begin{align*}
  g(\x) & = \sum_{\alert{i=0}}^d w_i x_i\\
  g(\x) & = \w \cdot \x
-\end{align}
+\end{align*}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \label{hyperplanes}
- \begin{center}\frametitle{Separating hyperplanes in 2 dimensions}
+\frametitle{Separating hyperplanes in 2 dimensions}
+\begin{center}
 \vskip -0.5cm 
 \includegraphics[scale=0.5]{linear.pdf}
 \end{center}
 \end{frame}
 
+\begin{frame}
+ \frametitle{Learning}
+\begin{itemize}
+\item The goal of the learning process is to come up with a ``good''
+  weight vector $\w$
+\item The learning process will use examples to guide the search of a
+  ``good'' $\w$
+\item Different notions of ``goodness'' exist, which yield different
+  learning algorithms
+\item We will describe some of these algorithms in the following
+\end{itemize}
+\end{frame}
 
 
 \section{Perceptron}
@@ -139,7 +166,7 @@ Google
  \frametitle{Perceptron training}
 \begin{itemize}
  \item How do we find a set of weights that separate our classes?
-\item \textbf{Perceptron}: A simple mistake-driven online algortihm
+\item \textbf{Perceptron}: A simple mistake-driven online algorithm
 \begin{block}{}
 \begin{itemize}
 \item Start with a zero weight vector and process each training
@@ -204,11 +231,12 @@ Google
 \item Separating the training sample does not equal good accuracy on
   unseen data
 \item Empirically, better generalization performance with
-  \alert{weight averaging}
+  \voc{weight averaging}
 \begin{itemize}
 \item A method of avoiding overfitting
 \item As final weight vector, use the mean of all the weight vector
   values for each step of the algorithm
+\item (cf.\ regularization in a following session)
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -347,9 +375,9 @@ $\x = ($   & 1       & 0       & 2       & 0 & $)$\\
     \]
   \item If we take the logarithm of the threshold ($\ln 1 = 0$) and
     $g$, we'll get the same decision function
-    \begin{align}
+    \begin{align*}
       h(\x) = \ln\left(\frac{P(+1)}{P(-1)}\right) + \sum_{i=1}^{|V|} \ln\left(\frac{P(V_i|+1)}{P(V_i|-1)}\right)\color{blue}x_i
-    \end{align}
+    \end{align*}
   \end{itemize}
 \end{frame}
 
@@ -424,7 +452,417 @@ $\x = ($   & 1       & 0       & 2       & 0 & $)$\\
 
 \section{Logistic regression}
 
-\section{Extra material}
+\begin{frame}\frametitle{Probabilistic \voc{conditional} model}
+  \begin{itemize}
+  \item Let's try to come up with a \voc{probabilistic model} which
+    has some of the advantages of perceptron
+  \item Model $P(y|\x)$ directly, and not via $P(\x,y)$ and Bayes rule
+    as in Naive Bayes
+  \item Avoid issue of dependencies between features of $\x$
+  \item We'll take \voc{linear regression} as a starting point
+    \begin{itemize}
+    \item The goal is to adapt regression to model class-conditional
+      probability 
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Linear Regression}
+ \begin{itemize}
+ \item Training data: observations paired with outcomes ($n \in
+   \mathbb{R}$)
+ \item Observations have features (predictors, typically also real
+   numbers)
+ \item The model is a \voc{regression line} $y = ax + b$ which best
+   fits the observations
+   \begin{itemize}
+   \item $a$ is the \voc{slope}
+   \item $b$ is the \voc{intercept}
+   \item This model has two parameters (or weigths)
+   \item One feature = $x$ 
+   \item Example: \begin{itemize}
+     \item $x$ = number of vague adjectives in property
+       descriptions
+     \item $y$ = amount house sold over asking price
+     \end{itemize}
+   \end{itemize}
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.3]{regressionjm.png}
+% regressionjm.png: 864x589 pixel, 72dpi, 30.48x20.78 cm, bb=0 0 864 589
+
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Multiple linear regression}
+\begin{itemize}
+\item More generally $y = w_0 + \sum_{i=1}^{d} w_i x_i$, where
+  \begin{itemize}
+  \item $y$ = outcome
+  \item $w_0$ = intercept
+  \item $x_1..x_d$ = features vector and $w_1 .. w_d$ weight vector
+    \item Get rid of bias:
+      \[
+      g(\x) = \sum_{i=0}^d w_i x_i = \w \cdot \x 
+      \]
+ \end{itemize}
+ 
+  \item Linear regression: uses $g(\x)$ directly
+  \item Linear classifier: uses $\sign(g(\x))$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learning linear regression}
+  \begin{itemize}
+  \item Minimize \voc{sum squared error} over $N$ training examples 
+    \[ \mathrm{Err}(\w) = \sum_{n=1}^{N}(g(\x^{(n)}) - y^{(n)})^2 \]
+  \item Closed-form formula for choosing the best weights $\w$:
+    \[ \w = (X^{T}X)^{-1} X^{T} \mathbf{y} \] where the matrix $X$
+    contains training example features, and $\mathbf{y}$ is the vector
+    of outcomes.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Logistic regression}
+\begin{itemize}
+\item In logistic regression we use the linear model to assign
+  probabilities to class labels
+\item For binary classification, predict $P(Y=1|\x)$. But predictions
+  of linear regression model are $\in \mathbb{R}$, whereas
+  $P(Y=1|\x) \in [0,1]$
+\item Instead predict logit function of the probability:
+\begin{align*}
+  \ln\left(\frac{ P(Y=1|\x) }{1-P(Y=1|\x)}\right) & = \w\cdot\x \\
+  \frac{P(Y=1|\x)}{1-P(Y=1|\x)} & = e^{\w\cdot\x}
+\end{align*}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+Solving for $P(Y=1|\x)$ we obtain:
+\begin{align*}
+  P(Y=1|\x)  & = e^{\w\cdot\x}(1-P(Y=1|\x))\\
+  P(Y=1|\x)  & =  e^{\w\cdot\x} -  e^{\w\cdot\x}P(Y=1|\x)\\
+  P(Y=1|\x) + e^{\w\cdot\x}P(Y=1|\x) & = e^{\w\cdot\x}\\
+  P(Y=1|\x)(1  + e^{\w\cdot\x})      & = e^{\w\cdot\x}\\
+  P(Y=1|\x) & = \frac{e^{\w\cdot\x}}{1+e^{\w\cdot\x}} \\
+  & = \frac{\exp\left(\sum_{i=0}^d w_i
+      x_i\right)}{1+\exp\left(\sum_{i=0}^d w_i x_i\right)}
+\end{align*}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Logistic regression - classification}
+\begin{itemize}
+ \item Example $\x$ belongs to class $1$ if:
+\begin{align*}
+ \frac{P(Y=1|\x)}{1-P(Y=1|\x)} & > 1 \\
+ e^{\w\cdot\x}   & > 1 \\
+ \w\cdot\x       & > 0 \\
+ \sum_{i=0}^{d} w_i x_i          & > 0 
+\end{align*}
+\item Equation $\w \cdot \x = 0$ defines a hyperplane with points above
+  belonging to class $1$
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Multinomial logistic regression}
+  \begin{block}{}
+    Logistic regression generalized to more than two classes
+    \[
+    P(Y=y|\x,\W)  = \frac{ \exp(\W_{y\bullet} \cdot \x) }
+    {\sum_{y'}      \exp(\W_{y'\bullet} \cdot \x) }
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learning parameters}
+  \begin{itemize}
+  \item Conditional likelihood estimation: choose the weights which
+    make the probability of the observed values $y$ be the highest,
+    given the observations $\x_i$
+  \item For the training set with $N$ examples:
+    \begin{align*}
+      \mathbf{\hat{\W}} & = \argmax_{\W} \prod_{i=1}^{N}P(Y=y^{(n)}|\x^{(n)},\W)\\
+      & = \argmax_{\W} \sum_{i=1}^N \log P(Y=y^{(n)}|\x^{(n)},\W)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+
+
+  \begin{frame}
+  \frametitle{Error function}
+Equivalently, we seek the value of the parameters which
+\alert{minimize} the error function:
+  \begin{align*}
+    \mathrm{Err}(\W,D) & = - \sum_{n=1}^N \log P(Y=y^{(n)}|\x^{(n)},\W)
+  \end{align*}
+where $D = \{(x^{(n)},y^{(n)})\}_{n=1}^N$
+\end{frame}
+
+\begin{frame}  \frametitle{A problem in convex optimization}
+\begin{itemize}
+\item L-BFGS (Limited-memory Broyden-Fletcher-Goldfarb-Shanno method)
+\item gradient descent
+\item conjugate gradient
+\item iterative scaling algorithms
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stochastic gradient descent}
+  \begin{block}{Gradient descent}
+    \begin{itemize}
+    \item A gradient is a slope of a function
+    \item That is, a set of partial derivatives, one for each
+      dimension (parameter)
+    \item By following the gradient of a convex function we can
+     \alert{descend} to the bottom (minimum) 
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \includegraphics[scale=0.5]{Gradient2.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Gradient descent example}
+  \begin{itemize}
+  \item Find $\argmin_{\theta} f(\theta)$ where $f(\theta) = \theta^2$
+  \item Initial value of $\theta_1 = -1$
+  \item Gradient function: $\nabla f(\theta) = 2 \theta$
+  \item Update: $\theta^{(n+1)} = \theta^{(n)} - \eta \nabla f(\theta^{(n)})$
+  \item The \voc{learning rate} $\eta$ ($=0.2$) controls the speed of
+    the descent
+    \pause
+  \item After first iteration: $\theta^{(2)} = -1 - 0.2 (-2) = -0.6$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Five iterations of gradient descent}
+  \begin{center}
+    \includegraphics[scale=0.5]{gradient.pdf}
+  \end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Stochastic}
+  \begin{itemize}
+  \item We could compute the gradient of error for the full dataset
+    before each update
+  \item Instead
+    \begin{itemize}
+    \item Compute the gradient of the error for a single example
+    \item update the weight
+    \item Move on to the next example
+    \end{itemize}
+  \item On average, we'll move in the right direction
+  \item Efficient, \voc{online} algorithm
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Error gradient}
+  \begin{itemize}
+  \item The gradient of the error function is the set of
+    partial derivatives of the error function with respect to the
+    parameters $\W_{yi}$
+    \begin{small}
+      \begin{align*}
+        \nabla_{y,i} \mathrm{Err}(D,\W) & = \frac{\partial}{\partial
+          \W_{yi}} \left(- \sum_{n=1}^N \log
+          P(Y=y|\x^{(n)},\W)\right)\\
+        & = - \sum_{n=1}^N \frac{\partial}{\partial \W_{yi}} \log
+        P(Y=y|\x^{(n)},\W)
+      \end{align*}
+    \end{small}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Single training example}
+  \begin{small}
+    \begin{align*}
+\frac{\partial}{\partial \W_{yi}} \log
+        P(Y=y|\x^{(n)},\W)
+      & = \frac{\partial }{\partial \W_{yi}} \log P(Y=y|\x^{(n)},\W) \\
+      & = \frac{\partial }{\partial \W_{yi}} \log
+      \frac{\exp(\W_{y\bullet} \cdot \x^{(n)})} {\sum_{y'}
+        \exp(\W_{y'\bullet}
+        \cdot \x^{(n)})}\\
+      &  \cdots \\
+      &  \cdots \\
+      & = x_i^{(n)}(\mathbf{1}(y = y^{(n)})-P(Y=y|\x^{(n)},\W))
+    \end{align*}
+  \end{small}
+
+\end{frame}
+
+\begin{frame}\frametitle{Update}
+\begin{block}{Stochastic gradient update step}
+  \begin{small}
+    \begin{align*}
+      \W_{yi}^{(n)} & = \W_{yi}^{(n-1)} + \eta x_i^{(n)}(\mathbf{1}(y
+      = y^{(n)})-P(Y=y|\x^{(n)},\W))
+    \end{align*}
+  \end{small}
+  \end{block}
+\end{frame}
+  
+\begin{frame}\frametitle{Update: Explicit}
+  \begin{itemize}
+  \item For the correct class ($y = y^{(n)}$)
+    \[
+    \W_{yi}^{(n)}  = \W_{yi}^{(n-1)} + \eta x_i^{(n)}(1-P(Y=y|\x^{(n)},\W))
+    \]
+    where $1-P(Y=y|\x^{(n)},\W)$ is the \voc{residual}\vskip 0.5cm
+  \item For all other classes ($y \neq y^{(n)}$)
+    \[
+    \W_{yi}^{(n)}  = \W_{yi}^{(n-1)} - \eta x_i^{(n)}P(Y=y|\x^{(n)},\W)
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Logistics Regression SGD vs Perceptron}
+\begin{align*}
+\w^{(n)}  & = & \w^{(n-1)} + && 1 & \x^{(n)} & \\
+    \W_{yi}^{(n)}  & = & \W_{yi}^{(n-1)} + && \eta & x_i^{(n)}& (1-P(Y=y|\x^{(n)},\W))
+  \end{align*}
+  \begin{itemize}
+  \item Very similar update!
+  \item Perceptron is simply an instantiation
+    of SGD for a particular error function
+  \item The perceptron criterion: for a correctly
+    classified example zero error; for a misclassified example
+    $-y^{(n)}\w\cdot\x^{(n)}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Maximum entropy}
+  \begin{block}
+    {}
+Multinomial logistic regression model is also known as the \voc{Maximum entropy
+model}. What is the connection?
+  \end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Entia non sunt multiplicanda praeter necessitatem}
+ \begin{center}
+ \includegraphics[]{ockham_razor.jpg}
+ % ockham_razor.jpg: 546x851 pixel, 300dpi, 4.62x7.21 cm, bb=0 0 131 204
+\end{center}
+\end{frame}
+
+
+\begin{frame}\frametitle{Maximum Entropy principle}
+ \begin{block}{Jaynes, 1957}
+   \begin{small}
+     ... in making inferences on the basis of partial information we
+     must use that probability distribution which has \alert{maximum
+       entropy} subject to whatever is known. This is the only
+     \alert{unbiased} assignment we can make; to use any other would amount to
+     arbitrary assumption of information which we by hypothesis do not
+     have.
+   \end{small}
+ \end{block}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Entropy}
+\begin{itemize}
+\item Out of all possible models, choose the simplest one consistent
+  with the data
+ \item Entropy of the distribution of $X$:
+\[ H(X) = -\sum_{x}P(X=x)\log_2P(X=x) \] 
+\item The uniform distribution has the \alert{highest entropy}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item Finding the maximum entropy distribution:
+\[
+ p* = \argmax_{p\in C} H(p)
+\]
+\item Berger et al. (1996) showed that solving this problem is
+  equivalent to finding the multinomial logistic regression model
+  whose weights maximize the likelihood of the training data.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Maxent principle -- simple example}
+\begin{itemize}
+\item Find a Maximum Entropy probability distribution $p(a,b)$ where
+  $a \in \{x,y\}$ and $b \in \{0,1\}$
+\item The only thing we know are is the following constraint: 
+  $p(x,0) + p(y,0) = 0.6$
+ \end{itemize}
+ \begin{center}
+   
+\begin{tabular}{l|ll|l}
+ $p(a,b)$ & 0 & 1 & \\\hline
+$x$       & ? & ? & \\
+$y$       & ? & ? & \\\hline 
+total     & 0.6 & & 1
+\end{tabular}
+\end{center}
+\pause 
+\begin{center}
+
+\begin{tabular}{l|ll|l}
+ $p(a,b)$ & 0 & 1 & \\\hline
+$x$       & 0.3 & 0.2 & \\
+$y$       & 0.3 & 0.2 & \\\hline
+total     & 0.6 & & 1
+\end{tabular}
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Comparison}
+  \begin{center}
+    \begin{small}
+      \begin{tabular}{l||l|l|l}
+        Model          & Naive Bayes & Perceptron     & Log. regression \\\hline
+        Model power    & Linear      & Linear         & Linear         \\
+        Type           & Generative  & Discriminative & Discriminative \\
+        Distribution   & $P(\x,y)$   & N/A            & $P(y|\x)$         \\
+        Smoothing      & Crucial     & Optional$^1$   &
+        Optional\footnote{Aka regularization} \\
+        Independence & Strong      & None           & None\\
+      \end{tabular}
+    \end{small}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The end}
+\end{frame}
+
 \begin{frame}
 \frametitle{Efficient averaged perceptron algorithm}
  \begin{block}{\textsc{Perceptron}($x^{1:N},y^{1:N},I$):}
