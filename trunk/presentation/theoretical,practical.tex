@@ -1,0 +1,475 @@
+\documentclass[usenames,dvipsnames]{beamer}
+% \usepackage[noend]{algorithmic}
+% \usepackage{paralist}
+\usepackage{latexsym,amsmath,url}
+\usepackage{hyperref}
+\usepackage{color}
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareMathSymbol{\N}{\mathbin}{AMSb}{"4E}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\newcommand{\vecb}[1]{\mathbf{#1}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\w}{\mathbf{w}}
+\newcommand{\voc}[1]{\emph{\color{ForestGreen}#1}}
+
+\newcommand{\superscript}[1]{\ensuremath{^\textrm{\scriptsize#1 }}}
+\mode<presentation>{ 
+  \usetheme{Boadilla}
+  %\setbeamercovered{invisible}
+  % or whatever (possibly just delete it)
+} \title[ML / NLP Course ]{Theoretical and Practical Matters}
+
+
+\author[Chrupala and Stroppa]{Grzegorz Chrupa{\l}a and Nicolas Stroppa}
+
+\institute[]  % (optional, but mostly needed)
+{
+Saarland University\\
+Google
+}
+\date[2010] % (optional, should be abbreviation of conference name)
+{META Workshop}
+
+
+\pgfdeclareimage[height=1cm]{UdS}{SaarlandUniversityLogo.jpg}
+% \logo{\pgfuseimage{UdS}}
+
+\AtBeginSection[]
+ {
+    \begin{frame}
+        \frametitle{Outline}
+        \tableofcontents[currentsection]
+    \end{frame}
+ }
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+
+\begin{frame}\frametitle{ML Connections}
+
+Some connections with Machine Learning.
+\begin{itemize}
+\item Artificial Intelligence:  humans can learn, so should machines
+\begin{itemize}
+\item focus is on (understanding and) reproducing human learning abilities
+\end{itemize}
+\item Statistics:  if you have facts, we can surely do some inference
+\begin{itemize}
+\item focus is on data distribution models and their learnability
+  (model assumptions, convergence speeds, \ldots)
+\end{itemize}
+\item Optimization: if you define a goal, we can try to get you
+  closer to it
+\begin{itemize}
+\item focus is on building devices for efficiently (often
+  approximately) finding/searching acceptable solutions
+\end{itemize}
+\item Applications: speech, finance, nlp, vision, bioinformatics, recognition
+\begin{itemize}
+\item focus is on defining and formalizing the problems, and usefulness in applications
+\end{itemize}
+\end{itemize}
+
+\vspace{0.4cm}
+We can look at similar problems and methods from different angles.
+%%% Where is ML used?  for what?  why?
+\end{frame}
+
+
+\begin{frame}\frametitle{ML Connections}
+Some connections with Machine Learning.
+ \begin{itemize}
+\item Statistics and Optimization:
+\begin{itemize}
+\item Maximizing likelyhood vs.\ minimizing loss
+\end{itemize}
+\item Applications
+\begin{itemize}
+\item How to measure/evaluate usefulness?
+\item How to choose methods?
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\section{Statistics and Optimization}
+
+\begin{frame}\frametitle{Criteria used to learn}
+
+You've seen a number of formulas used by Grzegorz to derive the models
+of Naive Bayes, Perceptron, Maxent.
+
+\vspace{0.4cm}
+We're going to revisit those in a more general/unified setting.
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Loss minimization}
+
+Let's consider the following general optimization setting.
+
+We assume:
+\begin{itemize}
+\item The (decision) function $w$ we're looking for belongs to some
+  predefined function space $S$
+\item We have training examples $(x_i, y_i)$
+\item We can define a \voc{loss per example} $Loss(\w, x_i, y_i)$ and a
+  \voc{function penalty} $J(\w)$
+\end{itemize}
+
+\vspace{0.4cm}
+Then, $w$ can be obtained by solving the following \voc{optimization problem}:
+\begin{equation*}
+ min_{\w \in S} Loss(\w, D) = \sum_i Loss(\w, x_i, y_i) + \lambda J(\w),
+\end{equation*}
+where $\lambda$ is a \voc{regularization} parameter.
+\end{frame}
+
+
+\begin{frame}\frametitle{Optimization and regularization}
+
+In this setting, we simply need to define:
+\begin{itemize}
+\item a loss per example $Loss(\w, x_i, y_i)$:
+\begin{itemize}
+\item if using the function $\w$ to classify $x_i$, how far from the truth (i.e.\ $y_i$) am I, and
+  how much should I pay for that?
+\end{itemize}
+\item a function penalty $J(\w)$:
+\begin{itemize}
+\item how complex is $\w$, and much should I pay for that complexity?
+\end{itemize}
+\end{itemize}
+
+\vspace{0.4cm}
+\begin{itemize}
+\item The first part is going to try fitting the data (by minimizing the
+errors made on the training set)
+\item The second part is making sure the model we're using is not too
+  complex (and will avoid overfitting the data)
+\item The tradeoff is controlled by the regularization parameter
+  $\lambda$.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Types of losses}
+
+Different types of example losses can be considered.
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Loss name & $Loss(\w, x, y)$ & Used in \\
+\hline
+0-1 loss & $1$ if $\w.x \neq y$, $0$ otherwise &Perceptron \\
+Hinge loss & $\left[ 1-y \w.x \right]_+$ & SVM \\
+Log loss & $\log(1+e^{-y \w.x})$ & Maxent \\
+\hline
+% \item ... loss: .. (naive bayes)
+% \item huber loss: ... (...) (we'll see why)
+% \item kernel loss???
+% \item ada ... loss (adaboost)  No
+\end{tabular}
+\end{center}
+%  (maybe pictures...) ...
+
+\vspace{0.4cm}
+This means that, despite their diverse origins, all these approaches can thus be turned into (surprisingly similar) optimization problems!
+
+\end{frame}
+
+\begin{frame}\frametitle{Types of penalties}
+
+For linear models, common penalties are:
+\begin{itemize}
+\item $L_2$ norm: $\| w \|_2 = \sum_j w_j^2$ (Ridge penalty)
+\item $L_1$ norm: $\| w \|_1 = \sum_j |w_j| $ (Lasso penalty)
+\end{itemize}
+
+\vspace{0.4cm}
+More generally, for a function $f$, we can consider regularizations like:
+\begin{itemize}
+\item $J(f) = \int f''(x)^2 dx$, which defines how ``bumpy'' the function is.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Bayesian approaches}
+
+In Bayesian tradition, we can write:
+\begin{equation*}
+p(Model|Data) = \frac{p(Data|Model) \times p(Model)}{p(Data)}
+\end{equation*}
+
+For a fixed data set, this yields:
+\begin{equation*}
+p(Model|Data) \propto p(Data|Model) \times p(Model), \text{i.e.}
+\end{equation*}
+\begin{equation*}
+p(w|D) \propto p(D|w) \times p(w),
+\end{equation*}
+or, equivalently:
+\begin{equation*}
+\log p(w|D) = \log p(D|w) + \log C p(w)
+\end{equation*}
+and with independent training examples:
+\begin{equation*}
+\log p(w|D) = \sum_i \log p(x_i|w) + \log C p(w)
+\end{equation*}
+
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Loss minimization and Bayesian approaches}
+
+Compare
+\begin{equation*}
+-Loss(\w, D) = \sum_i - Loss(\w, x_i, y_i) - \lambda J(\w),
+\end{equation*}
+with:
+\begin{equation*}
+\log p(w|D) = \sum_i \log p(x_i|w) + \log C p(w)
+\end{equation*}
+
+\vspace{0.4cm}
+\begin{itemize}
+\item A choice of example loss corresponds to a choice of underlying
+distribution for the example!
+\item A choice of function penalty corresponds to a choice of a model
+  \voc{prior}!
+\item The same thing is just seen from different angles\ldots
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Penalties and Priors}
+
+Ridge penalty.
+\begin{equation*}
+-\lambda \|w\|_2 = \log C p(w)
+\end{equation*}
+\begin{equation*}
+  p(w) = \frac{1}{C} exp(-\lambda \|w\|_2)
+\end{equation*}
+We can easily recognize a Gaussian prior.
+
+\vspace{0.6cm}
+Lasso penalty.
+\begin{equation*}
+-\lambda \|w\|_1 = \log C p(w)
+\end{equation*}
+\begin{equation*}
+  p(w) = \frac{1}{C} exp(-\lambda \|w\|_1)
+\end{equation*}
+We can easily recognize a Laplacian prior.
+
+\vspace{0.4cm}
+Common regularization penalties correspond to common model
+priors\ldots
+\end{frame}
+
+
+% \begin{frame}\frametitle{Optimization and regularization}
+% Let's look at models:
+
+% .. loss (maxent):
+% \begin{math}
+% ... 
+% \end{math}
+
+% \begin{math}
+% ...
+% \end{math}
+
+%  loss (...):
+% \begin{math}
+% ...
+% \end{math}
+
+% \begin{math}
+% ...
+% \end{math}
+ 
+% \end{frame}
+
+
+\begin{frame}\frametitle{Optimization and regularization}
+There exists further justification for miniming the empirical loss.
+
+\vspace{0.4cm}
+Basically, we can consider the training data as samples from a
+distribution.  In this context, the empirical mean loss is just an
+estimate (in the statistical sense) for the (true/underlying) expected mean loss.
+
+\vspace{0.4cm}
+The regularization controls the complexity of the function and
+prevents the approximation to cause too much overfitting.
+\end{frame}
+
+\begin{frame}\frametitle{Optimization and regularization}
+How is optimization performed?
+
+\vspace{0.4cm}
+Depending on the actual function (differentiable, non-differentiable), different optimizations methods can be used.
+
+\vspace{0.4cm}
+Quasi-Newton methods, Quadratic programming, etc.
+
+\vspace{0.4cm}
+These are not ML-specific, they are general methods.
+%Note: laplacian prior: zero weight...
+\end{frame}
+
+
+\section{Evaluation}
+\begin{frame}\frametitle{Evaluation considerations}
+\begin{itemize}
+\item Don't start playing if you don't know what you're
+  expecting\ldots
+\item Make sure you can evaluate, even before playing with data and building any algorithm
+\item You need to convince yourself that you have access to the
+  methodology to prove something
+\item Again, \emph{you} should know the data\ldots
+\item Evaluation is not only about metrics, it's about a proper methodology
+\begin{itemize}
+\item A wise guy once told me: ``each time you're reusing the same test set,
+substract 1 to you results''\ldots
+\item Correct methodology somewhere between inner convinction and good
+  (known) metrics on (known) datasets (actually, both are needed) \pause
+\item Evaluate often, evaluate early!
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}\frametitle{Pipeline issues}
+
+\begin{itemize}
+\item Most of our NLP ``systems'' are components that integrate in larger
+pipelines
+\item What matters at the end of the day is the final results, the \voc{extrinsinc
+evaluation}
+\item However, evaluation of a standalone component (\voc{intrinsic
+    evaluation}) is useful to:
+\begin{itemize}
+\item abstract away from the other components
+\item perform fast intermediate experiments
+\end{itemize}
+\end{itemize}
+
+\vspace{0.4cm}
+But very easy to forget the bigger picture\ldots
+\pause
+\vspace{0.4cm}
+Evaluate often, evaluate early\ldots
+\end{frame}
+
+
+\begin{frame}\frametitle{Pipeline issues}
+
+(Not so) virtual conversation:
+\begin{itemize}
+\item \emph{Bob}: Hey, look I have a system with only 5\% error-rate!
+\item \emph{Charlie}: Dude, if you plug 6 of those, then you probably have a
+  26\% error-rate system\ldots
+\end{itemize}
+
+\vspace{0.4cm}
+(Not so) virtual conversation:
+\begin{itemize}
+\item \emph{Bob}: Look, I've improved the Shuba metrics of my word
+  aligner by 2\%!
+\item \emph{Charlie}: Dude, that's great!  Did your translations got better?
+\item \emph{Bob}: Hmm\dots well\dots, no improvement in Supernova
+  score so far\dots
+\end{itemize}
+
+\pause
+\vspace{0.4cm}
+Issue:
+\begin{itemize}
+\item Very easy to spend time on the ``wrong component''
+% (word alignment in MT: 3xIBM1+2xHMM)
+\item But there's actually no totally-wrong component, they all must
+  be looked at carefully
+\end{itemize}
+
+\end{frame}
+
+
+% \begin{frame}\frametitle{Being convinced}
+% inner convinction: do side-by-side, really compare, e.g. biggest
+% change, etc.
+% \end{frame}
+
+% \begin{frame}\frametitle{Optimization and regularization}
+% bias-variance tradeoff..  (p 37)
+
+% model selection (p 219).
+
+% %  ... cross-valiadtion...
+% \end{frame}
+
+
+% \section{Choice of models in practice}
+% \begin{frame}\frametitle{Classification models}
+% When you have data with 1M dimensions, they are usually separable.
+
+% ... Linear models.  Issue is that data most be linearly separable: when you have 1M dimensions, it's most likely separable....
+% ... k-nn: ...
+% ... Decision trees.  Boosted decision trees is good when you have less dimensions, with real-valued axes.
+% ... Rule of thumb: use linear models for highly dimensional problems, boosted decision trees otherwise.
+% \end{frame}
+
+
+% \begin{frame}\frametitle{A word on feature selection...}
+%  high-dimensional problems p >> N.
+%    high-variance  overfitting.   => highly regularized...  (reg maxent, reg linear svm)  (no need for kernels...)
+% L1 provides automatic feature selection (some weights are set to zero).
+% \end{frame}
+
+
+% \begin{frame}\frametitle{The Software Engineer point of view}
+% Why ML is good from a software engineering point of view?
+%  - Transform a problem into a series of smaller problems: (parallel,
+%  can be done by different people)
+
+% balackboxes can sometime be good.
+
+% - Feature engineering
+
+% ...
+
+% Focus on the important thing
+
+% \end{frame}
+
+% \begin{frame}\frametitle{The Environmentalist point of view}
+% Reduce, Re-use, Re-cycle
+
+% Same method, features can be used in different contexts, applications,...
+% ...
+% \end{frame}
+
+
+% The more complex (expressivness) the model, the more difficult to
+% learn (need lots of data)
+% % Charts.  What good and what not.  Relationship between methods...
+% % (MT) System combination...
+
+% References: textbooks...
+
+\end{document}
